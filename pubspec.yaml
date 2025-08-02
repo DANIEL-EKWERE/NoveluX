@@ -34,6 +34,32 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  get:
+  flutter_svg:
+  shared_preferences:
+  font_awesome_flutter: 
+  http:
+  url_launcher:
+  carousel_slider:
+  flutter_native_splash:
+  badges:
+  pull_to_refresh_flutter3:
+  flutter_inappwebview:
+  atomic_webview:
+  dropdown_search:
+  image_picker:
+  intl: 
+  overlay_kit:
+  flutter_spinkit:
+  animated_text_kit:
+  pdf: 
+  open_file: 
+  share_plus: 
+  google_fonts:
+  flutter_native_contact_picker: 
+  local_auth:
+  file_picker: 
+  lucide_icons_flutter: ^3.0.8
 
 dev_dependencies:
   flutter_test:
