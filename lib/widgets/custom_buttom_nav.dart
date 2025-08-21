@@ -4,6 +4,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:novelux/config/app_style.dart';
 // import 'package:jara_market/screens/cart_screen/controller/cart_controller.dart';
 
 // var controller = Get.put(CartController());
@@ -32,34 +33,34 @@ class CustomBottomNav extends StatelessWidget {
         // ],
       ),
       child: BottomNavigationBar(
-       // backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF1a1a1a),
         elevation: 0,
         showSelectedLabels: true,
         showUnselectedLabels: true,
         currentIndex: currentIndex,
         onTap: onTap,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xff332052),
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: depperBlue,
+        unselectedItemColor: Colors.grey[600],
         items: [
            BottomNavigationBarItem(
-            icon: Icon(LucideIcons.book,), //SvgPicture.asset('assets/images/img_nav_home_unselected.svg'),   //Icon(Icons.home_outlined),
-            activeIcon:  Icon(Icons.book,),  //SvgPicture.asset('assets/images/img_nav_home_selected.svg'),   //Icon(Icons.home),
+            icon: Icon(Icons.library_books,), //SvgPicture.asset('assets/images/img_nav_home_unselected.svg'),   //Icon(Icons.home_outlined),
+            activeIcon:  Icon(Icons.library_books,),  //SvgPicture.asset('assets/images/img_nav_home_selected.svg'),   //Icon(Icons.home),
             label: 'Library',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(LucideIcons.history,weight: 0.1,),
-            activeIcon: Icon(LucideIcons.history,weight: 0.1,),
+            icon: Icon(Icons.explore,weight: 0.1,),
+            activeIcon: Icon(Icons.explore,weight: 0.1,),
             label: 'Explore',
           ),
           BottomNavigationBarItem(
-            icon:  Icon(LucideIcons.galleryHorizontalEnd400,weight: 0.01,),
-            activeIcon: const Icon(LucideIcons.galleryHorizontalEnd400,weight: 0.01,)  ,
+            icon:  Icon(Icons.apps,weight: 0.01,),
+            activeIcon: const Icon(Icons.apps,weight: 0.01,)  ,
             label: 'Genres',
           ),
           BottomNavigationBarItem(
-            icon: Icon(LucideIcons.user,weight: 0.01,),
-            activeIcon: Icon(LucideIcons.user,weight: 0.01,),
+            icon: Icon(Icons.person,weight: 0.01,),
+            activeIcon: Icon(Icons.person,weight: 0.01,),
             label: 'Me',
           ),
         ],
