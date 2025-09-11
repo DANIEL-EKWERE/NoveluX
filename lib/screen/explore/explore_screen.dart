@@ -1,5 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:novelux/config/app_style.dart';
+import 'package:novelux/screen/book_preview/book_preview.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -125,6 +128,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               },
                             ),
                           ),
+                          SizedBox(height: 16),
                           _buildBestNovelsGrid(),
                         ],
                       ),
@@ -273,15 +277,49 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
                     SizedBox(height: 24),
 
-                    // World Famous Section
-                    _buildSectionHeader("World Famous"),
-                    _buildWorldFamousGrid(),
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
+                      ),
+                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey[900],
+                      ),
+                      child: Column(
+                        children: [
+                          // World Famous Section
+                          _buildSectionHeader("World Famous"),
+                          _buildWorldFamousGrid(),
+
+                          SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
 
                     SizedBox(height: 24),
 
-                    // Featured for you Section
-                    _buildSectionHeader("Featured for you"),
-                    _buildFeaturedList(),
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
+                      ),
+                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey[900],
+                      ),
+                      child: Column(
+                        children: [
+                          // Featured for you Section
+                          _buildSectionHeader("Featured for you"),
+                          _buildFeaturedList(),
+
+                          SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
 
                     SizedBox(height: 100), // Bottom padding for navigation
                   ],
@@ -330,7 +368,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   ) {
     return Container(
       height: 30,
-      margin: EdgeInsets.symmetric(horizontal: 16),
+      margin: EdgeInsets.only(left: 16),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
@@ -342,7 +380,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               margin: EdgeInsets.only(right: 12),
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.yellow : Color(0xFF2A2A2A),
+                color: isSelected ? depperBlue : Color(0xFF2A2A2A),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -389,39 +427,45 @@ class _ExploreScreenState extends State<ExploreScreen> {
         itemCount: novels.length,
         itemBuilder: (context, index) {
           final novel = novels[index];
-          return Container(
-            width: 80,
-            margin: EdgeInsets.only(right: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(8),
+          return GestureDetector(
+            onTap: (){
+              print(index);
+              Navigator.push(context, CupertinoPageRoute(builder: (context) => BookPreview(index: index, bookList: novels),));
+            },
+            child: Container(
+              width: 80,
+              margin: EdgeInsets.only(right: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF2A2A2A),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Icon(Icons.book, color: Colors.grey, size: 40),
+                    ),
                   ),
-                  child: Center(
-                    child: Icon(Icons.book, color: Colors.grey, size: 40),
+                  SizedBox(height: 8),
+                  Text(
+                    novel["title"]!,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  novel["title"]!,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
+                  SizedBox(height: 4),
+                  Text(
+                    novel["subtitle"]!,
+                    style: TextStyle(color: depperBlue, fontSize: 10),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 4),
-                Text(
-                  novel["subtitle"]!,
-                  style: TextStyle(color: Colors.orange, fontSize: 10),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -548,7 +592,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   decoration: BoxDecoration(
                     color:
                         item["rank"] <= 3
-                            ? Colors.orange
+                            ? depperBlue
                             : Color.fromARGB(255, 169, 170, 108),
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -586,7 +630,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       "${item["rating"]}",
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
-                    Icon(Icons.star, color: Colors.yellow, size: 14),
+                    Icon(Icons.star, color: Colors.amber, size: 14),
                     SizedBox(width: 8),
                     Text(
                       item["views"],
@@ -597,7 +641,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 SizedBox(height: 4),
                 Text(
                   item["tag"],
-                  style: TextStyle(color: Colors.orange, fontSize: 10),
+                  style: TextStyle(color: depperBlue, fontSize: 10),
                 ),
               ],
             ),
@@ -675,7 +719,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       Row(
                         children: [
                           Text("4.5", style: TextStyle(color: Colors.white)),
-                          Icon(Icons.star, color: Colors.yellow, size: 14),
+                          Icon(Icons.star, color: Colors.amber, size: 14),
                           SizedBox(width: 8),
                           Text(
                             views[_currentIndex], //"72.8K Views",
@@ -811,7 +855,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
                 Text(
                   items[index]["tag"]!,
-                  style: TextStyle(color: Colors.orange, fontSize: 9),
+                  style: TextStyle(color: depperBlue, fontSize: 9),
                   maxLines: 1,
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.ellipsis,
@@ -861,7 +905,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
                 Text(
                   items[index]["tag"]!,
-                  style: TextStyle(color: Colors.orange, fontSize: 9),
+                  style: TextStyle(color: depperBlue, fontSize: 9),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -886,7 +930,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
           SizedBox(height: 16),
           Container(
-            height: 420,
+            height: 150,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -920,7 +964,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return Row(
       children: [
         Container(
-          width: 60,
+          width: 80,
           height: 120,
           decoration: BoxDecoration(
             color: Color(0xFF2A2A2A),
@@ -952,11 +996,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
               Row(
                 children: [
                   Text("$rating", style: TextStyle(color: Colors.white)),
-                  Icon(Icons.star, color: Colors.yellow, size: 14),
+                  Icon(Icons.star, color: Colors.amber, size: 14),
                   SizedBox(width: 8),
                   Text(
                     tag,
-                    style: TextStyle(color: Colors.orange, fontSize: 10),
+                    style: TextStyle(color: depperBlue, fontSize: 10),
                   ),
                 ],
               ),
@@ -974,7 +1018,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       child: Column(
         children: [
           Container(
-            height: 60,
+            height: 120,
             decoration: BoxDecoration(
               color: Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(4),
@@ -988,9 +1032,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
             title,
             style: TextStyle(color: Colors.white, fontSize: 9),
             maxLines: 1,
+            textAlign: TextAlign.left,
             overflow: TextOverflow.ellipsis,
           ),
-          Text(tag, style: TextStyle(color: Colors.orange, fontSize: 8)),
+          Text(tag, style: TextStyle(color: depperBlue, fontSize: 8)),
         ],
       ),
     );
@@ -1014,7 +1059,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     ];
 
     return Container(
-      height: 140,
+      height: 180,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -1022,12 +1067,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
         itemBuilder: (context, index) {
           final item = items[index];
           return Container(
-            width: 100,
+            width: 80,
             margin: EdgeInsets.only(right: 12),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 80,
+                  height: 120,
                   decoration: BoxDecoration(
                     color: Color(0xFF2A2A2A),
                     borderRadius: BorderRadius.circular(4),
@@ -1039,7 +1085,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   item["title"].toString(),
                   style: TextStyle(color: Colors.white, fontSize: 10),
                   maxLines: 2,
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.left,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (item["rating"] != null)
@@ -1050,13 +1096,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         "${item["rating"]}",
                         style: TextStyle(color: Colors.white, fontSize: 9),
                       ),
-                      Icon(Icons.star, color: Colors.yellow, size: 10),
+                      Icon(Icons.star, color: Colors.amber, size: 10),
                     ],
                   ),
                 Text(
                   item["tag"].toString(),
-                  style: TextStyle(color: Colors.orange, fontSize: 8),
-                  textAlign: TextAlign.center,
+                  style: TextStyle(color: depperBlue, fontSize: 8),
+                  textAlign: TextAlign.left,
                 ),
               ],
             ),
@@ -1140,7 +1186,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       "${item["rating"]}",
                       style: TextStyle(color: Colors.white),
                     ),
-                    Icon(Icons.star, color: Colors.yellow, size: 14),
+                    Icon(Icons.star, color: Colors.amber, size: 14),
                     SizedBox(width: 8),
                     Text(
                       item["views"],
@@ -1168,10 +1214,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
       margin: EdgeInsets.only(right: 6, bottom: 4),
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.2),
+        color: depperBlue.withOpacity(0.2),
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Text(text, style: TextStyle(color: Colors.orange, fontSize: 8)),
+      child: Text(text, style: TextStyle(color: depperBlue, fontSize: 8)),
     );
   }
 
@@ -1198,12 +1244,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, color: isSelected ? Colors.yellow : Colors.grey, size: 24),
+        Icon(icon, color: isSelected ? Colors.amber : Colors.grey, size: 24),
         SizedBox(height: 4),
         Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.yellow : Colors.grey,
+            color: isSelected ? Colors.amber : Colors.grey,
             fontSize: 12,
           ),
         ),

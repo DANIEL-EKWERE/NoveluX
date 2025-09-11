@@ -13,11 +13,7 @@ class _MeScreenState extends State<MeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF1a1a1a),
-      appBar: AppBar(
-        backgroundColor: Color(0xFF1a1a1a),
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
+
       body: Column(
         children: [
           // Profile header
@@ -52,7 +48,7 @@ class _MeScreenState extends State<MeScreen> {
           
           // VIP Section
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Color(0xFF2a2a2a),
@@ -162,7 +158,7 @@ class _MeScreenState extends State<MeScreen> {
 
   Widget _buildMenuItem(IconData icon, String title, Color iconColor) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
+      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       child: ListTile(
         leading: Container(
           padding: EdgeInsets.all(8),
@@ -180,7 +176,7 @@ class _MeScreenState extends State<MeScreen> {
           title,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 16,
+            fontSize: 14,
           ),
         ),
         trailing: Icon(
