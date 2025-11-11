@@ -23,7 +23,7 @@ class CustomBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-       // color: Colors.white,
+        // color: Colors.white,
         // boxShadow: [
         //   BoxShadow(
         //     color: Colors.black12,
@@ -43,25 +43,29 @@ class CustomBottomNav extends StatelessWidget {
         selectedItemColor: depperBlue,
         unselectedItemColor: Colors.grey[600],
         items: [
-           BottomNavigationBarItem(
-            icon: Icon(Icons.library_books,), //SvgPicture.asset('assets/images/img_nav_home_unselected.svg'),   //Icon(Icons.home_outlined),
-            activeIcon:  Icon(Icons.library_books,),  //SvgPicture.asset('assets/images/img_nav_home_selected.svg'),   //Icon(Icons.home),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.library_books,
+            ), //SvgPicture.asset('assets/images/img_nav_home_unselected.svg'),   //Icon(Icons.home_outlined),
+            activeIcon: Icon(
+              Icons.library_books,
+            ), //SvgPicture.asset('assets/images/img_nav_home_selected.svg'),   //Icon(Icons.home),
             label: 'Library',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.explore,weight: 0.1,),
-            activeIcon: Icon(Icons.explore,weight: 0.1,),
+            icon: Icon(Icons.explore, weight: 0.1),
+            activeIcon: Icon(Icons.explore, weight: 0.1),
             label: 'Explore',
           ),
           BottomNavigationBarItem(
-            icon:  Icon(Icons.apps,weight: 0.01,),
-            activeIcon: const Icon(Icons.apps,weight: 0.01,)  ,
+            icon: Icon(Icons.apps, weight: 0.01),
+            activeIcon: const Icon(Icons.apps, weight: 0.01),
             label: 'Genres',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person,weight: 0.01,),
-            activeIcon: Icon(Icons.person,weight: 0.01,),
-            label: 'Me',
+            icon: Icon(Icons.person, weight: 0.01),
+            activeIcon: Icon(Icons.person, weight: 0.01),
+            label: 'Profile',
           ),
         ],
       ),

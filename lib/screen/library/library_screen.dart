@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:novelux/config/app_style.dart';
 import 'package:novelux/config/size_config.dart';
@@ -13,9 +14,25 @@ class LibraryScreen extends StatefulWidget {
 
 class _LibraryScreenState extends State<LibraryScreen> {
   int selectedTabIndex = 0; // Add this line
-
+  int initialIndex = 0; // Add this line
+  dynamic valuex = 0;
+  dynamic isProfile = false;
   @override
   Widget build(BuildContext context) {
+    var value = Get.arguments;
+    if (value == null) {
+      setState(() {
+        initialIndex = 0;
+      });
+    } else {
+      valuex = value['value'];
+      isProfile = value['isProfile'];
+      print(value);
+      setState(() {
+        initialIndex = valuex ?? 0;
+      });
+    }
+
     SizeConfig().init(context);
     double sizeVertical = SizeConfig.blockSizeVertical!;
     double sizeHorizontal = SizeConfig.blockSizeHorizontal!;
@@ -23,6 +40,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       child: Scaffold(
         backgroundColor: background,
         body: DefaultTabController(
+          initialIndex: initialIndex,
           length: 2,
           child: Column(
             children: [
@@ -33,8 +51,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     border: Border(bottom: BorderSide.none),
                   ),
                   child: Row(
-                    
                     children: [
+                      isProfile
+                          ? IconButton(
+                            onPressed: () {
+                              Get.back();
+                            },
+                            icon: Icon(
+                              Icons.chevron_left_rounded,
+                              size: 30,
+                              color: kWhite,
+                            ),
+                          )
+                          : SizedBox.shrink(),
+                      SizedBox(width: 10),
                       Spacer(),
                       TabBar(
                         dividerColor: Colors.transparent,
@@ -53,9 +83,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         indicatorColor: Colors.transparent,
                         tabs: [Tab(text: 'Library'), Tab(text: 'History')],
                       ),
-                      SizedBox(width: sizeHorizontal * 5,),
-                      IconButton(onPressed: (){}, icon: Icon(Icons.playlist_add_check_rounded,size: 30,color: kWhite)),
-                      SizedBox(width: 10,),
+                      SizedBox(width: sizeHorizontal * 5),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.playlist_add_check_rounded,
+                          size: 30,
+                          color: kWhite,
+                        ),
+                      ),
+                      SizedBox(width: 10),
                     ],
                   ),
                 ),

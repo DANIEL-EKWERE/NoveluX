@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:novelux/config/app_style.dart';
 import 'package:novelux/screen/book_preview/book_preview.dart';
+import 'package:novelux/screen/view_all_screen/view_all_screen.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -22,7 +24,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   late CarouselSliderController carouselController;
 
   final List<String> title = [
-    "For you",
+    "werewolf",
     "Romance",
     "CEO",
     "Mafia",
@@ -54,7 +56,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     "34.5 chapters",
   ];
 
-  final List<String> categories = ["For you", "Romance", "CEO", "Mafia"];
+  final List<String> categories = ["werewolf", "Romance", "CEO", "Mafia"];
   final List<String> rankings = ["Must Read", "Most Engaging", "Top Rated"];
   final List<String> cuteBabyCategories = [
     "One Pregnancy's Triplets",
@@ -109,6 +111,101 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Best Novels Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[900],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        height: 223,
+                        child: Column(
+                          children: [
+                            _buildSectionHeader("Weekly Features"),
+                            SizedBox(
+                              height: 170,
+                              child: CarouselView.weighted(
+                                flexWeights: const [1, 3, 1],
+                                children: [
+                                  Container(
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF2A2A2A),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.book,
+                                        color: Colors.grey,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF2A2A2A),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.book,
+                                        color: Colors.grey,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF2A2A2A),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.book,
+                                        color: Colors.grey,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF2A2A2A),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.book,
+                                        color: Colors.grey,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF2A2A2A),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.book,
+                                        color: Colors.grey,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
                     Container(
                       margin: EdgeInsets.symmetric(horizontal: 10),
                       decoration: BoxDecoration(
@@ -117,7 +214,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       ),
                       child: Column(
                         children: [
-                          _buildSectionHeader("Best Novels"),
+                          _buildSectionHeader("For You"),
                           SizedBox(
                             height: 25,
                             child: _buildCategoryTabs(
@@ -129,12 +226,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             ),
                           ),
                           SizedBox(height: 16),
-                          _buildBestNovelsGrid(),
+                          _buildForYouGrid(),
                         ],
                       ),
                     ),
 
-                    SizedBox(height: 24),
+                    SizedBox(height: 10),
 
                     // Rankings Section
                     // _buildSectionHeader("Rankings"),
@@ -150,7 +247,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       ),
                       child: Column(
                         children: [
-                          _buildSectionHeader("Rankings"),
+                          _buildSectionHeader("Best Novels"),
 
                           _buildCategoryTabs(rankings, selectedRankingIndex, (
                             index,
@@ -163,13 +260,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 24),
+                    SizedBox(height: 10),
 
                     // Daily Update Section
                     _buildSectionHeader("Daily Update"),
                     _buildDailyUpdateCard(),
 
-                    SizedBox(height: 24),
+                    SizedBox(height: 10),
 
                     Container(
                       margin: EdgeInsets.symmetric(
@@ -191,7 +288,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 24),
+                    SizedBox(height: 10),
 
                     Container(
                       margin: EdgeInsets.symmetric(
@@ -222,7 +319,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 24),
+                    SizedBox(height: 10),
 
                     Container(
                       margin: EdgeInsets.symmetric(
@@ -246,13 +343,36 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             },
                           ),
                           SizedBox(height: 16),
+
                           _buildGetRichGrid(),
                           SizedBox(height: 10),
                         ],
                       ),
                     ),
 
-                    SizedBox(height: 24),
+                    SizedBox(height: 10),
+
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
+                      ),
+                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey[900],
+                      ),
+                      child: Column(
+                        children: [
+                          // Free Download Section
+                          _buildSectionHeader("Short Stories"),
+                          _buildShortStoryGrid(),
+                          SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 10),
 
                     Container(
                       margin: EdgeInsets.symmetric(
@@ -275,7 +395,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 24),
+                    SizedBox(height: 10),
 
                     Container(
                       margin: EdgeInsets.symmetric(
@@ -298,7 +418,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 24),
+                    SizedBox(height: 10),
 
                     Container(
                       margin: EdgeInsets.symmetric(
@@ -347,14 +467,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Row(
-            children: [
-              Text(
-                "View all",
-                style: TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-              Icon(Icons.chevron_right, color: Colors.grey, size: 16),
-            ],
+          GestureDetector(
+            onTap: () {
+              Get.to(() => ViewAllScreen(), arguments: title);
+            },
+            child: Row(
+              children: [
+                Text(
+                  "View all",
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+                Icon(Icons.chevron_right, color: Colors.grey, size: 16),
+              ],
+            ),
           ),
         ],
       ),
@@ -398,7 +523,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  Widget _buildBestNovelsGrid() {
+  Widget _buildForYouGrid() {
     final novels = [
       {
         "title": "The Priceless Divine Doctor",
@@ -410,6 +535,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
         "subtitle": "Get rich Suddenly",
         "image": "assets/rich.jpg",
       },
+      {
+        "title": "Comatose Heir's Secret ...",
+        "subtitle": "Reborn",
+        "image": "assets/contract.jpg",
+      },
+      {"title": "Billi", "subtitle": "Love", "image": "assets/billionaire.jpg"},
       {
         "title": "Comatose Heir's Secret ...",
         "subtitle": "Reborn",
@@ -428,9 +559,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
         itemBuilder: (context, index) {
           final novel = novels[index];
           return GestureDetector(
-            onTap: (){
+            onTap: () {
               print(index);
-              Navigator.push(context, CupertinoPageRoute(builder: (context) => BookPreview(index: index, bookList: novels),));
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder:
+                      (context) => BookPreview(index: index, bookList: novels),
+                ),
+              );
             },
             child: Container(
               width: 80,
@@ -460,9 +597,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    novel["subtitle"]!,
-                    style: TextStyle(color: depperBlue, fontSize: 10),
+
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: const Color.fromARGB(40, 2, 137, 209),
+                    ),
+                    child: Text(
+                      novel["subtitle"]!,
+                      style: TextStyle(color: depperBlue, fontSize: 10),
+                    ),
                   ),
                 ],
               ),
@@ -639,9 +784,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   ],
                 ),
                 SizedBox(height: 4),
-                Text(
-                  item["tag"],
-                  style: TextStyle(color: depperBlue, fontSize: 10),
+
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: const Color.fromARGB(40, 2, 137, 209),
+                  ),
+                  child: Text(
+                    item["tag"],
+                    style: TextStyle(color: depperBlue, fontSize: 10),
+                  ),
                 ),
               ],
             ),
@@ -779,8 +932,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
       "Bou",
     ];
 
+    final tags = ["werewolf", "betrayal", "revenge", "arranged marriage"];
+
     return Container(
-      height: 160,
+      height: 190,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -808,6 +963,83 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.ellipsis,
                 ),
+                SizedBox(height: 8),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: const Color.fromARGB(40, 2, 137, 209),
+                  ),
+                  child: Text(
+                    tags[index],
+                    style: TextStyle(color: depperBlue, fontSize: 8),
+                    // maxLines: 2,
+                    textAlign: TextAlign.center,
+                    //overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildShortStoryGrid() {
+    final items = [
+      "Tame My Ferocious CEO",
+      "A Fulfilled Promise of M...",
+      "A Dare To Kiss The Bad Boy",
+      "Bou",
+    ];
+
+    final tags = ["werewolf", "betrayal", "revenge", "arranged marriage"];
+
+    return Container(
+      height: 188,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return Container(
+            width: 80,
+            margin: EdgeInsets.only(right: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF2A2A2A),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Center(child: Icon(Icons.book, color: Colors.grey)),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  items[index],
+                  style: TextStyle(color: Colors.white, fontSize: 11),
+                  maxLines: 2,
+                  textAlign: TextAlign.left,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 8),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: const Color.fromARGB(40, 2, 137, 209),
+                  ),
+                  child: Text(
+                    tags[index],
+                    style: TextStyle(color: depperBlue, fontSize: 8),
+                    // maxLines: 2,
+                    textAlign: TextAlign.center,
+                    //overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
           );
@@ -825,7 +1057,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     ];
 
     return Container(
-      height: 160,
+      height: 165,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -853,12 +1085,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  items[index]["tag"]!,
-                  style: TextStyle(color: depperBlue, fontSize: 9),
-                  maxLines: 1,
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: const Color.fromARGB(40, 2, 137, 209),
+                  ),
+                  child: Text(
+                    items[index]["tag"]!,
+                    style: TextStyle(color: depperBlue, fontSize: 9),
+                    maxLines: 1,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -877,7 +1116,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     ];
 
     return Container(
-      height: 160,
+      height: 165,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -887,6 +1126,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             width: 80,
             margin: EdgeInsets.only(right: 12),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   height: 120,
@@ -903,11 +1143,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  items[index]["tag"]!,
-                  style: TextStyle(color: depperBlue, fontSize: 9),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: const Color.fromARGB(40, 2, 137, 209),
+                  ),
+                  child: Text(
+                    items[index]["tag"]!,
+                    style: TextStyle(color: depperBlue, fontSize: 9),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -930,7 +1178,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           ),
           SizedBox(height: 16),
           Container(
-            height: 150,
+            height: 155,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: [
@@ -998,10 +1246,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   Text("$rating", style: TextStyle(color: Colors.white)),
                   Icon(Icons.star, color: Colors.amber, size: 14),
                   SizedBox(width: 8),
-                  Text(
-                    tag,
-                    style: TextStyle(color: depperBlue, fontSize: 10),
-                  ),
+                  Text(tag, style: TextStyle(color: depperBlue, fontSize: 10)),
                 ],
               ),
             ],
@@ -1016,6 +1261,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       width: 80,
       margin: EdgeInsets.only(right: 8),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             height: 120,
@@ -1035,7 +1281,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
             textAlign: TextAlign.left,
             overflow: TextOverflow.ellipsis,
           ),
-          Text(tag, style: TextStyle(color: depperBlue, fontSize: 8)),
+
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: const Color.fromARGB(40, 2, 137, 209),
+            ),
+            child: Text(tag, style: TextStyle(color: depperBlue, fontSize: 8)),
+          ),
         ],
       ),
     );
@@ -1059,7 +1313,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     ];
 
     return Container(
-      height: 180,
+      height: 190,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -1099,10 +1353,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       Icon(Icons.star, color: Colors.amber, size: 10),
                     ],
                   ),
-                Text(
-                  item["tag"].toString(),
-                  style: TextStyle(color: depperBlue, fontSize: 8),
-                  textAlign: TextAlign.left,
+
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: const Color.fromARGB(40, 2, 137, 209),
+                  ),
+                  child: Text(
+                    item["tag"].toString(),
+                    style: TextStyle(color: depperBlue, fontSize: 8),
+                    textAlign: TextAlign.left,
+                  ),
                 ),
               ],
             ),
@@ -1138,6 +1400,30 @@ class _ExploreScreenState extends State<ExploreScreen> {
         "views": "2.3K Views",
         "tags": ["Hispanic culture", "Self - discovery"],
       },
+      {
+        "title": "The Alchemist",
+        "description":
+            "\"The Alchemist\" by Ben Jonson is a comedic play likely written in the early ...",
+        "rating": 3.0,
+        "views": "2.3K Views",
+        "tags": ["Hispanic culture", "Self - discovery"],
+      },
+      {
+        "title": "THE SEVENTH SON",
+        "description":
+            "How far would a father go to save his sons?? What lengths would he take?? H...",
+        "rating": 5.0,
+        "views": "1.4K Views",
+        "tags": ["Curse", "Revenge"],
+      },
+      {
+        "title": "One Dollar Flash Sale",
+        "description":
+            "Charles Matthews, a recent college graduate, found himself in a tough spot...",
+        "rating": 4.1,
+        "views": "23.0K Views",
+        "tags": ["System", "Rags-to-Riches"],
+      },
     ];
 
     return Column(
@@ -1151,8 +1437,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 80,
+            width: 80,
+            height: 110,
             decoration: BoxDecoration(
               color: Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(4),
@@ -1168,14 +1454,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   item["title"],
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   item["description"],
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: TextStyle(color: Colors.grey, fontSize: 10),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1186,11 +1472,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       "${item["rating"]}",
                       style: TextStyle(color: Colors.white),
                     ),
-                    Icon(Icons.star, color: Colors.amber, size: 14),
+                    Icon(Icons.star, color: Colors.amber, size: 12),
                     SizedBox(width: 8),
                     Text(
                       item["views"],
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                      style: TextStyle(color: Colors.grey, fontSize: 10),
                     ),
                   ],
                 ),

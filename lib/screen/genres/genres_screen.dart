@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:novelux/config/app_style.dart';
 
 class GenresScreen extends StatefulWidget {
-
   const GenresScreen({super.key});
 
   @override
@@ -9,8 +9,7 @@ class GenresScreen extends StatefulWidget {
 }
 
 class _GenresScreenState extends State<GenresScreen> {
- 
- int selectedGenreIndex = 0;
+  int selectedGenreIndex = 0;
 
   final List<String> genres = [
     'Romance',
@@ -32,7 +31,8 @@ class _GenresScreenState extends State<GenresScreen> {
   final List<Map<String, dynamic>> books = [
     {
       'title': 'The Revenge Marriage...',
-      'subtitle': 'Original title:My Ex-Wife is Pregnant Again Callum Blackwell married the wido...',
+      'subtitle':
+          'Original title:My Ex-Wife is Pregnant Again Callum Blackwell married the wido...',
       'rating': 4.2,
       'views': '20.8K Views',
       'tag': 'pregnant',
@@ -40,7 +40,8 @@ class _GenresScreenState extends State<GenresScreen> {
     },
     {
       'title': 'Sweet Desire',
-      'subtitle': 'She looked at the man sitting next to her dad in disgust, she couldn\'t believe she ha...',
+      'subtitle':
+          'She looked at the man sitting next to her dad in disgust, she couldn\'t believe she ha...',
       'rating': 4.8,
       'views': '10.8K Views',
       'tag': 'Love Triangle',
@@ -48,7 +49,8 @@ class _GenresScreenState extends State<GenresScreen> {
     },
     {
       'title': 'You are the most pre...',
-      'subtitle': 'Since five years ago, Melissa had been suffering from a painful incident due to whic...',
+      'subtitle':
+          'Since five years ago, Melissa had been suffering from a painful incident due to whic...',
       'rating': 5.0,
       'views': '2.6K Views',
       'tag': 'Boss-Employee',
@@ -56,7 +58,8 @@ class _GenresScreenState extends State<GenresScreen> {
     },
     {
       'title': 'The Mistaken Identity',
-      'subtitle': 'Kalliyah\'s twin sister, Alliyah decides to have an affair with an older man. The affa...',
+      'subtitle':
+          'Kalliyah\'s twin sister, Alliyah decides to have an affair with an older man. The affa...',
       'rating': 4.7,
       'views': '3.4K Views',
       'tag': 'Mistaken Identity',
@@ -64,7 +67,8 @@ class _GenresScreenState extends State<GenresScreen> {
     },
     {
       'title': 'The Debt of kiss lasts...',
-      'subtitle': 'This story is about a rich CEO of the country, whose life is a mystery for everyon...',
+      'subtitle':
+          'This story is about a rich CEO of the country, whose life is a mystery for everyon...',
       'rating': 4.4,
       'views': '8.0K Views',
       'tag': 'CEO',
@@ -95,9 +99,7 @@ class _GenresScreenState extends State<GenresScreen> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFF1a1a1a),
-        ),
+        decoration: BoxDecoration(color: Color(0xFF1a1a1a)),
         child: Row(
           children: [
             // Left sidebar with genres
@@ -111,17 +113,25 @@ class _GenresScreenState extends State<GenresScreen> {
                   return Container(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: selectedGenreIndex == index ? Colors.transparent : Colors.transparent,
+                      color:
+                          selectedGenreIndex == index
+                              ? Colors.transparent
+                              : Colors.transparent,
                       border: Border(
                         left: BorderSide(
-                          color: selectedGenreIndex == index  ? Color(0xFFFFD700) : Colors.transparent,
+                          color:
+                              selectedGenreIndex == index
+                                  ? depperBlue
+                                  : Colors.transparent,
                           width: 3,
                         ),
                       ),
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        print('Selected genre: ${genres[index]} "at index $index');
+                        print(
+                          'Selected genre: ${genres[index]} "at index $index',
+                        );
                         // Handle genre selection
                         setState(() {
                           //isSelected = index == index;
@@ -132,9 +142,15 @@ class _GenresScreenState extends State<GenresScreen> {
                       child: Text(
                         genres[index],
                         style: TextStyle(
-                          color: selectedGenreIndex == index ? Color(0xFFFFD700) : Colors.grey[400],
+                          color:
+                              selectedGenreIndex == index
+                                  ? depperBlue
+                                  : Colors.grey[400],
                           fontSize: 10,
-                          fontWeight: selectedGenreIndex == index ? FontWeight.w500 : FontWeight.normal,
+                          fontWeight:
+                              selectedGenreIndex == index
+                                  ? FontWeight.w500
+                                  : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -152,9 +168,7 @@ class _GenresScreenState extends State<GenresScreen> {
                   //   end: Alignment.bottomCenter,
                   // ),
                   color: Color(0xFF2a2a2a),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                  ),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(24)),
                 ),
                 // color: Color(0xFF2a2a2a),
                 child: ListView.builder(
@@ -269,15 +283,18 @@ class _GenresScreenState extends State<GenresScreen> {
                                 ),
                                 SizedBox(height: 8),
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: Color(0xFFB8860B),
+                                    color: depperBlue.withValues(alpha: .2),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
                                     book['tag'],
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: depperBlue,
                                       fontSize: 10,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -296,7 +313,7 @@ class _GenresScreenState extends State<GenresScreen> {
           ],
         ),
       ),
-     // bottomNavigationBar: _buildBottomNavigationBar(0),
+      // bottomNavigationBar: _buildBottomNavigationBar(0),
     );
   }
 
