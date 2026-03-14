@@ -144,7 +144,7 @@ class AppTheme {
     ),
     
     // Card Theme
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: kWhite,
       shadowColor: kGrey.withOpacity(0.1),
       elevation: 2,
@@ -265,7 +265,7 @@ class AppTheme {
     ),
     
     // Card Theme
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: kBrown,
       shadowColor: kBlack.withOpacity(0.3),
       elevation: 4,
