@@ -3,1543 +3,436 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:novelux/config/app_style.dart';
-import 'package:novelux/screen/book_preview/book_preview.dart';
+import 'package:novelux/screen/book_preview/story_detail_screen.dart';
+import 'package:novelux/screen/explore/controller/explore_controller.dart';
 import 'package:novelux/screen/view_all_screen/view_all_screen.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
-
   @override
   _ExploreScreenState createState() => _ExploreScreenState();
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
-  String searchQuery = "One Pregnancy's Triplets: Daddy is So Am...";
+  final ctrl = Get.put(ExploreController());
+  final searchCtrl = TextEditingController();
   int selectedCategoryIndex = 0;
-  int selectedRankingIndex = 0;
-  int selectedCuteBabyIndex = 0;
-  int selectedGetRichIndex = 0;
-
-  int _currentIndex = 0;
-  late CarouselSliderController carouselController;
-
-  final List<String> title = [
-    "werewolf",
-    "Romance",
-    "CEO",
-    "Mafia",
-    "CEO",
-    "Mafia",
-  ];
-  final List<String> subTitle = [
-    "For you roipwoeiweuoriwepd",
-    "Romance rioowrwoeeproew",
-    "CEO oeirpwoewerwoe[p[qwd]]",
-    "Mafia dprpfokwepd[wpekfoww",
-    "CEO oeirpwoewerwoe[p[qwd]]",
-    "Mafia dprpfokwepd[wpekfoww",
-  ];
-  final List<String> views = [
-    "503943.34 Views",
-    "4829.4 Views",
-    "432.54 Views",
-    "34.5 View",
-    "432.54 Views",
-    "34.5 View",
-  ];
-  final List<String> chapters = [
-    "503943.34 chpaters",
-    "4829.4 chapters",
-    "432.54 chapters",
-    "34.5 chapters",
-    "432.54 chapters",
-    "34.5 chapters",
-  ];
-
-  final List<String> categories = ["werewolf", "Romance", "CEO", "Mafia"];
-  final List<String> rankings = ["Must Read", "Most Engaging", "Top Rated"];
-  final List<String> cuteBabyCategories = [
-    "One Pregnancy's Triplets",
-    "Single mom's baby",
-  ];
-  final List<String> getRichCategories = [
-    "Heir of the Richest Man",
-    "Get Rich System",
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    carouselController = CarouselSliderController();
-  }
+  int selectedRankingIndex  = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1A1A1A),
+      backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Status bar and search
-            Container(
-              padding: EdgeInsets.all(16),
+        child: Column(children: [
+          // Search bar
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: GestureDetector(
+              onTap: () => _showSearch(context),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Color(0xFF2A2A2A),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.search, color: Colors.grey, size: 18),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        searchQuery,
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(color: const Color(0xFF2A2A2A), borderRadius: BorderRadius.circular(25)),
+                child: Row(children: [
+                  const Icon(Icons.search, color: Colors.grey, size: 18),
+                  const SizedBox(width: 10),
+                  const Expanded(child: Text('Search novels, authors, genres...',
+                      style: TextStyle(color: Colors.grey, fontSize: 12))),
+                ]),
               ),
             ),
+          ),
 
-            Expanded(
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: ctrl.fetchAll,
+              color: depperBlue,
               child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Best Novels Section
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        height: 223,
-                        child: Column(
-                          children: [
-                            _buildSectionHeader("Weekly Features"),
-                            SizedBox(
-                              height: 170,
-                              child: CarouselView.weighted(
-                                flexWeights: const [1, 3, 1],
-                                children: [
-                                  Container(
-                                    height: 120,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF2A2A2A),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.book,
-                                        color: Colors.grey,
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 120,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF2A2A2A),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.book,
-                                        color: Colors.grey,
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 120,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF2A2A2A),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.book,
-                                        color: Colors.grey,
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 120,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF2A2A2A),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.book,
-                                        color: Colors.grey,
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    height: 120,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF2A2A2A),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.book,
-                                        color: Colors.grey,
-                                        size: 40,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          _buildSectionHeader("For You"),
-                          SizedBox(
-                            height: 25,
-                            child: _buildCategoryTabs(
-                              categories,
-                              selectedCategoryIndex,
-                              (index) {
-                                setState(() => selectedCategoryIndex = index);
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          _buildForYouGrid(),
-                        ],
-                      ),
-                    ),
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  // ── Featured Carousel ─────────────────────────────────────
+                  Obx(() => ctrl.featured.isNotEmpty
+                      ? _section('Featured', _buildFeaturedCarousel())
+                      : ctrl.isLoadingFeatured.value
+                          ? _shimmerRow()
+                          : const SizedBox.shrink()),
 
-                    SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-                    // Rankings Section
-                    // _buildSectionHeader("Rankings"),
-                    // _buildCategoryTabs(rankings, selectedRankingIndex, (index) {
-                    //   setState(() => selectedRankingIndex = index);
-                    // }),
-                    // _buildRankingsList(),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          _buildSectionHeader("Best Novels"),
+                  // ── For You / Genre filtered ──────────────────────────────
+                  _section('For You', Column(children: [
+                    _genreTabs(),
+                    const SizedBox(height: 12),
+                    Obx(() => ctrl.forYou.isEmpty
+                        ? _shimmerRow()
+                        : _storyRow(ctrl.forYou)),
+                  ])),
 
-                          _buildCategoryTabs(rankings, selectedRankingIndex, (
-                            index,
-                          ) {
-                            setState(() => selectedRankingIndex = index);
-                          }),
-                          SizedBox(height: 10),
-                          _buildRankingsList(),
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-                    // Daily Update Section
-                    _buildSectionHeader("Daily Update"),
-                    _buildDailyUpdateCard(),
+                  // ── Rankings ──────────────────────────────────────────────
+                  _section('Best Novels', Column(children: [
+                    _tabRow(['Must Read', 'Most Engaging', 'Top Rated'], selectedRankingIndex,
+                        (i) => setState(() => selectedRankingIndex = i)),
+                    const SizedBox(height: 10),
+                    Obx(() => ctrl.trending.isEmpty
+                        ? _shimmerRow()
+                        : _rankingsList(ctrl.trending)),
+                  ])),
 
-                    SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
-                      ),
-                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          // Free Download Section
-                          _buildSectionHeader("Free Download"),
-                          _buildFreeDownloadGrid(),
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
+                  // ── Trending ──────────────────────────────────────────────
+                  _section('Trending Now', Obx(() => ctrl.trending.isEmpty
+                      ? _shimmerRow()
+                      : _storyRow(ctrl.trending))),
 
-                    SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
-                      ),
-                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          // Cute Baby Section
-                          _buildSectionHeader("Cute Baby"),
+                  // ── Editor's Pick ─────────────────────────────────────────
+                  _section("Editor's Pick", Obx(() => ctrl.editorsPick.isEmpty
+                      ? _shimmerRow()
+                      : _featuredList(ctrl.editorsPick))),
 
-                          _buildCategoryTabs(
-                            cuteBabyCategories,
-                            selectedCuteBabyIndex,
-                            (index) {
-                              setState(() => selectedCuteBabyIndex = index);
-                            },
-                          ),
-                          SizedBox(height: 16),
-                          _buildCuteBabyGrid(),
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
-                      ),
-                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          // Get Rich Suddenly Section
-                          _buildSectionHeader("Get Rich Suddenly"),
-                          _buildCategoryTabs(
-                            getRichCategories,
-                            selectedGetRichIndex,
-                            (index) {
-                              setState(() => selectedGetRichIndex = index);
-                            },
-                          ),
-                          SizedBox(height: 16),
-
-                          _buildGetRichGrid(),
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
-                      ),
-                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          // Free Download Section
-                          _buildSectionHeader("Short Stories"),
-                          _buildShortStoryGrid(),
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
-                      ),
-                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          // Completed Stories Section
-                          _buildSectionHeader("Completed Stories"),
-                          _buildCompletedStoriesGrid(),
-
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
-                      ),
-                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          // World Famous Section
-                          _buildSectionHeader("World Famous"),
-                          _buildWorldFamousGrid(),
-
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
-                      ),
-                      //   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[900],
-                      ),
-                      child: Column(
-                        children: [
-                          // Featured for you Section
-                          _buildSectionHeader("Featured for you"),
-                          _buildFeaturedList(),
-
-                          SizedBox(height: 10),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 100), // Bottom padding for navigation
-                  ],
-                ),
+                  const SizedBox(height: 100),
+                ]),
               ),
             ),
-          ],
-        ),
-      ),
-      //  bottomNavigationBar: _buildBottomNavigation(),
-    );
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
           ),
-          GestureDetector(
-            onTap: () {
-              Get.to(() => ViewAllScreen(), arguments: title);
-            },
-            child: Row(
-              children: [
-                Text(
-                  "View all",
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-                Icon(Icons.chevron_right, color: Colors.grey, size: 16),
-              ],
-            ),
-          ),
-        ],
+        ]),
       ),
     );
   }
 
-  Widget _buildCategoryTabs(
-    List<String> categories,
-    int selectedIndex,
-    Function(int) onTap,
-  ) {
+  Widget _section(String title, Widget child) => Container(
+    margin: const EdgeInsets.symmetric(horizontal: 10),
+    decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: Colors.grey[900]),
+    child: Column(children: [
+      _sectionHeader(title),
+      child,
+      const SizedBox(height: 10),
+    ]),
+  );
+
+  Widget _sectionHeader(String title) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      Text(title, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+      GestureDetector(
+        onTap: () => Get.to(() => ViewAllScreen(), arguments: title),
+        child: Row(children: [
+          const Text('View all', style: TextStyle(color: Colors.grey, fontSize: 12)),
+          const Icon(Icons.chevron_right, color: Colors.grey, size: 16),
+        ]),
+      ),
+    ]),
+  );
+
+  Widget _genreTabs() => Obx(() {
+    final genres = [{'name': 'All', 'slug': ''}, ...ctrl.genres];
     return Container(
-      height: 30,
-      margin: EdgeInsets.only(left: 16),
+      height: 28,
+      margin: const EdgeInsets.only(left: 16),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final isSelected = index == selectedIndex;
+        itemCount: genres.length,
+        itemBuilder: (_, i) {
+          final isSelected = i == selectedCategoryIndex;
           return GestureDetector(
-            onTap: () => onTap(index),
+            onTap: () {
+              setState(() => selectedCategoryIndex = i);
+              final slug = genres[i]['slug'] ?? '';
+              if (slug.isEmpty) ctrl.fetchForYou(); else ctrl.filterByGenre(slug.toString());
+            },
             child: Container(
-              margin: EdgeInsets.only(right: 12),
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              margin: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
               decoration: BoxDecoration(
-                color: isSelected ? depperBlue : Color(0xFF2A2A2A),
+                color: isSelected ? depperBlue : const Color(0xFF2A2A2A),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                categories[index],
-                style: TextStyle(
-                  color: isSelected ? Colors.black : Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              child: Text(genres[i]['name']?.toString() ?? '',
+                  style: TextStyle(color: isSelected ? Colors.white : Colors.white70, fontSize: 11)),
             ),
           );
         },
       ),
     );
-  }
+  });
 
-  Widget _buildForYouGrid() {
-    final novels = [
-      {
-        "title": "The Priceless Divine Doctor",
-        "subtitle": "Medical Skills",
-        "image": "assets/doctor.jpg",
+  Widget _tabRow(List<String> tabs, int selected, Function(int) onTap) => Container(
+    height: 28,
+    margin: const EdgeInsets.only(left: 16),
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: tabs.length,
+      itemBuilder: (_, i) {
+        final isSel = i == selected;
+        return GestureDetector(
+          onTap: () => onTap(i),
+          child: Container(
+            margin: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+            decoration: BoxDecoration(
+              color: isSel ? depperBlue : const Color(0xFF2A2A2A),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(tabs[i], style: TextStyle(color: isSel ? Colors.white : Colors.white70, fontSize: 11)),
+          ),
+        );
       },
-      {
-        "title": "Super Rich Second Gene...",
-        "subtitle": "Get rich Suddenly",
-        "image": "assets/rich.jpg",
-      },
-      {
-        "title": "Comatose Heir's Secret ...",
-        "subtitle": "Reborn",
-        "image": "assets/contract.jpg",
-      },
-      {"title": "Billi", "subtitle": "Love", "image": "assets/billionaire.jpg"},
-      {
-        "title": "Comatose Heir's Secret ...",
-        "subtitle": "Reborn",
-        "image": "assets/contract.jpg",
-      },
-      {"title": "Billi", "subtitle": "Love", "image": "assets/billionaire.jpg"},
-    ];
+    ),
+  );
 
-    return Container(
-      height: 200,
-      //  margin: EdgeInsets.only(top: 16),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: novels.length,
-        itemBuilder: (context, index) {
-          final novel = novels[index];
+  Widget _buildFeaturedCarousel() => Obx(() {
+    if (ctrl.featured.isEmpty) return const SizedBox(height: 170, child: Center(child: CircularProgressIndicator(color: Colors.blue)));
+    return SizedBox(
+      height: 170,
+      child: CarouselSlider.builder(
+        itemCount: ctrl.featured.length,
+        itemBuilder: (_, i, __) {
+          final story = ctrl.featured[i];
+          final coverUrl = ctrl.getCoverUrl(story);
           return GestureDetector(
-            onTap: () {
-              print(index);
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder:
-                      (context) => BookPreview(index: index, bookList: novels),
-                ),
-              );
-            },
+            onTap: () => Navigator.push(context, CupertinoPageRoute(
+                builder: (_) => StoryDetailScreen(slug: story['slug']))),
             child: Container(
-              width: 80,
-              margin: EdgeInsets.only(right: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF2A2A2A),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Icon(Icons.book, color: Colors.grey, size: 40),
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    novel["title"]!,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 4),
-
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      color: const Color.fromARGB(40, 2, 137, 209),
-                    ),
-                    child: Text(
-                      novel["subtitle"]!,
-                      style: TextStyle(color: depperBlue, fontSize: 10),
-                    ),
-                  ),
-                ],
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),
+                color: const Color(0xFF2A2A2A)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: coverUrl.isNotEmpty
+                    ? Image.network(coverUrl, fit: BoxFit.cover, width: double.infinity,
+                        errorBuilder: (_, __, ___) => _bookPlaceholder())
+                    : _bookPlaceholder(),
               ),
             ),
           );
         },
+        options: CarouselOptions(
+          height: 170, viewportFraction: 0.55,
+          enableInfiniteScroll: ctrl.featured.length > 1,
+          autoPlay: true,
+        ),
       ),
     );
-  }
+  });
 
-  Widget _buildRankingsList() {
-    final rankings = [
-      {
-        "rank": 1,
-        "title": "Wed to the Forbidden Uncle",
-        "rating": 4.6,
-        "views": "177K Views",
-        "tag": "Age gap",
-      },
-      {
-        "rank": 2,
-        "title": "Love Hate Relationship",
-        "rating": 4.9,
-        "views": "44.2K Views",
-        "tag": "Marriage Before Love",
-      },
-      {
-        "rank": 3,
-        "title": "The Confessions of St. Augustine",
-        "rating": 3.0,
-        "views": "896 Views",
-        "tag": "Spirituality",
-      },
-      {
-        "rank": 4,
-        "title": "Wed to the Forbidden Uncle",
-        "rating": 4.6,
-        "views": "177K Views",
-        "tag": "Age gap",
-      },
-      {
-        "rank": 5,
-        "title": "Love Hate Relationship",
-        "rating": 4.9,
-        "views": "44.2K Views",
-        "tag": "Marriage Before Love",
-      },
-      {
-        "rank": 6,
-        "title": "The Confessions of St. Augustine",
-        "rating": 3.0,
-        "views": "896 Views",
-        "tag": "Spirituality",
-      },
-      {
-        "rank": 7,
-        "title": "Wed to the Forbidden Uncle",
-        "rating": 4.6,
-        "views": "177K Views",
-        "tag": "Age gap",
-      },
-      {
-        "rank": 8,
-        "title": "Love Hate Relationship",
-        "rating": 4.9,
-        "views": "44.2K Views",
-        "tag": "Marriage Before Love",
-      },
-      {
-        "rank": 9,
-        "title": "The Confessions of St. Augustine",
-        "rating": 3.0,
-        "views": "896 Views",
-        "tag": "Spirituality",
-      },
-    ];
-
-    return Column(
-      //children: rankings.map((item) => _buildRankingItem(item)).toList(),
-      children: [
-        Container(
-          height: 300,
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            itemCount: 9,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              mainAxisSpacing: 2,
-              crossAxisSpacing: 2,
-
-              childAspectRatio: 2.4 / 5.3,
-              crossAxisCount: 3,
-            ),
-            itemBuilder: (context, index) {
-              var item = rankings[index];
-              return _buildRankingItem(item);
-            },
+  Widget _storyRow(RxList stories) => SizedBox(
+    height: 200,
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: stories.length,
+      itemBuilder: (_, i) {
+        final story    = stories[i];
+        final coverUrl = ctrl.getCoverUrl(story);
+        final tags     = (story['tags'] as List? ?? []);
+        return GestureDetector(
+          onTap: () => Navigator.push(context, CupertinoPageRoute(
+              builder: (_) => StoryDetailScreen(slug: story['slug']))),
+          child: Container(
+            width: 85, margin: const EdgeInsets.only(right: 12),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  height: 120, width: 85,
+                  child: coverUrl.isNotEmpty
+                      ? Image.network(coverUrl, fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _bookPlaceholder())
+                      : _bookPlaceholder(),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(story['title'] ?? '',
+                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w500),
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
+              if (tags.isNotEmpty)
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: depperBlue.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(tags[0]['name'] ?? '',
+                      style: TextStyle(color: depperBlue, fontSize: 9)),
+                ),
+            ]),
           ),
-        ),
-      ],
-    );
-  }
+        );
+      },
+    ),
+  );
 
-  Widget _buildRankingItem(Map<String, dynamic> item) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              Container(
-                width: 60,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Color(0xFF2A2A2A),
+  Widget _rankingsList(RxList stories) => SizedBox(
+    height: 300,
+    child: GridView.builder(
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.horizontal,
+      itemCount: stories.length > 9 ? 9 : stories.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        mainAxisSpacing: 2, crossAxisSpacing: 2,
+        childAspectRatio: 2.4 / 5.3, crossAxisCount: 3,
+      ),
+      itemBuilder: (_, i) {
+        final story    = stories[i];
+        final coverUrl = ctrl.getCoverUrl(story);
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          child: GestureDetector(
+            onTap: () => Navigator.push(context, CupertinoPageRoute(
+                builder: (_) => StoryDetailScreen(slug: story['slug']))),
+            child: Row(children: [
+              Stack(children: [
+                ClipRRect(
                   borderRadius: BorderRadius.circular(4),
+                  child: SizedBox(
+                    width: 55, height: 75,
+                    child: coverUrl.isNotEmpty
+                        ? Image.network(coverUrl, fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _bookPlaceholder())
+                        : _bookPlaceholder(),
+                  ),
                 ),
-                child: Center(child: Icon(Icons.book, color: Colors.grey)),
+                Positioned(
+                  child: Container(
+                    width: 15, height: 20,
+                    decoration: BoxDecoration(
+                      color: i < 3 ? depperBlue : const Color(0xFFA9AA6C),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Center(child: Text('${i + 1}',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10))),
+                  ),
+                ),
+              ]),
+              const SizedBox(width: 8),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text(story['title'] ?? '',
+                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w500),
+                    maxLines: 2, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Row(children: [
+                  Text('${double.tryParse(story['average_rating'].toString())?.toStringAsFixed(1) ?? '0.0'}',
+                      style: const TextStyle(color: Colors.white, fontSize: 10)),
+                  const Icon(Icons.star, color: Colors.amber, size: 10),
+                ]),
+              ])),
+            ]),
+          ),
+        );
+      },
+    ),
+  );
+
+  Widget _featuredList(RxList stories) => Column(
+    children: stories.take(6).map((story) {
+      final coverUrl = ctrl.getCoverUrl(story);
+      return GestureDetector(
+        onTap: () => Navigator.push(context, CupertinoPageRoute(
+            builder: (_) => StoryDetailScreen(slug: story['slug']))),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          child: Row(children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: SizedBox(
+                width: 75, height: 100,
+                child: coverUrl.isNotEmpty
+                    ? Image.network(coverUrl, fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => _bookPlaceholder())
+                    : _bookPlaceholder(),
               ),
-              Positioned(
-                child: Container(
-                  width: 15,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color:
-                        item["rank"] <= 3
-                            ? depperBlue
-                            : Color.fromARGB(255, 169, 170, 108),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "${item["rank"]}",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  item["title"],
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      "${item["rating"]}",
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                    Icon(Icons.star, color: Colors.amber, size: 14),
-                    SizedBox(width: 8),
-                    Text(
-                      item["views"],
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: const Color.fromARGB(40, 2, 137, 209),
-                  ),
-                  child: Text(
-                    item["tag"],
-                    style: TextStyle(color: depperBlue, fontSize: 10),
-                  ),
-                ),
-              ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDailyUpdateCard() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Color(0xFF2A2A2A),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ✅ FIX: use CarouselSlider directly
-                CarouselSlider(
-                  items: [
-                    _buildDailyUpdateItem("The Return of the Urban God of War"),
-                    _buildDailyUpdateItem("A Dare To Kiss The Bad Boy"),
-                    _buildDailyUpdateItem("The Billionaire's Fashion Designer"),
-                    _buildDailyUpdateItem("The Return of the Urban God of War"),
-                    _buildDailyUpdateItem("A Dare To Kiss The Bad Boy"),
-                    _buildDailyUpdateItem("The Billionaire's Fashion Designer"),
-                  ],
-                  options: CarouselOptions(
-                    enableInfiniteScroll: false,
-                    aspectRatio: 4 / 7,
-                    height: 120,
-
-                    // reverse: true,
-                    onPageChanged: (index, reason) {
-                      setState(() {
-                        _currentIndex = index;
-                      });
-                    },
-                    // initialPage: 1,
-                    //  autoPlay: true,
-                    enlargeCenterPage: true,
-                    viewportFraction:
-                        0.34, // ✅ controls how much of next card shows
-                  ),
-                ),
-
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title[_currentIndex], //"The Return of the Urban God of War",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        subTitle[_currentIndex], //"Original title: King of Modern Warfare Five years ago, I was framed and imprisoned! Five years later, I return I...",
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Text("4.5", style: TextStyle(color: Colors.white)),
-                          Icon(Icons.star, color: Colors.amber, size: 14),
-                          SizedBox(width: 8),
-                          Text(
-                            views[_currentIndex], //"72.8K Views",
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            chapters[_currentIndex], // "2570 chapters",
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      Wrap(
-                        spacing: 6,
-                        children: [
-                          _buildTag("Male Lead"),
-                          _buildTag("King"),
-                          _buildTag("Warrior"),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDailyUpdateItem(String title) {
-    return Container(
-      width: 80,
-      margin: EdgeInsets.only(right: 8),
-      child: Column(
-        children: [
-          Container(
-            height: 104,
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 22, 21, 21),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Center(child: Icon(Icons.book, color: Colors.grey)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFreeDownloadGrid() {
-    final items = [
-      "Tame My Ferocious CEO",
-      "A Fulfilled Promise of M...",
-      "A Dare To Kiss The Bad Boy",
-      "Bou",
-    ];
-
-    final tags = ["werewolf", "betrayal", "revenge", "arranged marriage"];
-
-    return Container(
-      height: 190,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width: 80,
-            margin: EdgeInsets.only(right: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(child: Icon(Icons.book, color: Colors.grey)),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  items[index],
-                  style: TextStyle(color: Colors.white, fontSize: 11),
-                  maxLines: 2,
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 8),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: const Color.fromARGB(40, 2, 137, 209),
-                  ),
-                  child: Text(
-                    tags[index],
-                    style: TextStyle(color: depperBlue, fontSize: 8),
-                    // maxLines: 2,
-                    textAlign: TextAlign.center,
-                    //overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildShortStoryGrid() {
-    final items = [
-      "Tame My Ferocious CEO",
-      "A Fulfilled Promise of M...",
-      "A Dare To Kiss The Bad Boy",
-      "Bou",
-    ];
-
-    final tags = ["werewolf", "betrayal", "revenge", "arranged marriage"];
-
-    return Container(
-      height: 188,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width: 80,
-            margin: EdgeInsets.only(right: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(child: Icon(Icons.book, color: Colors.grey)),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  items[index],
-                  style: TextStyle(color: Colors.white, fontSize: 11),
-                  maxLines: 2,
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 8),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: const Color.fromARGB(40, 2, 137, 209),
-                  ),
-                  child: Text(
-                    tags[index],
-                    style: TextStyle(color: depperBlue, fontSize: 8),
-                    // maxLines: 2,
-                    textAlign: TextAlign.center,
-                    //overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildCuteBabyGrid() {
-    final items = [
-      {"title": "One Pregnancy's T...", "tag": "Marriage Before L..."},
-      {"title": "Comatose Heir's Secret ...", "tag": "Reborn"},
-      {"title": "One Pregnancy's T...", "tag": "Cute Babies"},
-      {"title": "CEO", "tag": "Rom"},
-    ];
-
-    return Container(
-      height: 165,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width: 80,
-            margin: EdgeInsets.only(right: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(child: Icon(Icons.book, color: Colors.grey)),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  items[index]["title"]!,
-                  style: TextStyle(color: Colors.white, fontSize: 11),
-                  maxLines: 1,
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: const Color.fromARGB(40, 2, 137, 209),
-                  ),
-                  child: Text(
-                    items[index]["tag"]!,
-                    style: TextStyle(color: depperBlue, fontSize: 9),
-                    maxLines: 1,
-                    textAlign: TextAlign.left,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildGetRichGrid() {
-    final items = [
-      {"title": "The Son of The Richest Man", "tag": "Wealthy Heir"},
-      {"title": "I'm the Heir to a Billionaire", "tag": "Wealthy Heiress"},
-      {"title": "The Tycoon's Hidden Heir: ...", "tag": "Wealthy Heir"},
-      {"title": "Fro", "tag": "Urba"},
-    ];
-
-    return Container(
-      height: 165,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return Container(
-            width: 80,
-            margin: EdgeInsets.only(right: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(child: Icon(Icons.book, color: Colors.grey)),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  items[index]["title"]!,
-                  style: TextStyle(color: Colors.white, fontSize: 11),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: const Color.fromARGB(40, 2, 137, 209),
-                  ),
-                  child: Text(
-                    items[index]["tag"]!,
-                    style: TextStyle(color: depperBlue, fontSize: 9),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildCompletedStoriesGrid() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          _buildCompletedStoryItem(
-            "The Rejected Moon",
-            "Mira Savera is a daughter of a beta. She was born perfect and everyone a...",
-            3.0,
-            "Werewolf",
-          ),
-          SizedBox(height: 16),
-          Container(
-            height: 155,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _buildCompletedStoryGridItem(
-                  "Mummy, Daddy Is On H...",
-                  "Cute Baby",
-                ),
-                _buildCompletedStoryGridItem(
-                  "The Tycoon's Hidden Heir: ...",
-                  "Wealthy Heir",
-                ),
-                _buildCompletedStoryGridItem(
-                  "Reborn Ugly Wife Shocks ...",
-                  "Rebirth",
-                ),
-                _buildCompletedStoryGridItem("The Huu", "Reve"),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCompletedStoryItem(
-    String title,
-    String description,
-    double rating,
-    String tag,
-  ) {
-    return Row(
-      children: [
-        Container(
-          width: 80,
-          height: 120,
-          decoration: BoxDecoration(
-            color: Color(0xFF2A2A2A),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Center(child: Icon(Icons.book, color: Colors.grey)),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(story['title'] ?? '',
+                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+                  maxLines: 1, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 4),
+              Text(story['description'] ?? '',
+                  style: const TextStyle(color: Colors.grey, fontSize: 11),
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 4),
+              Row(children: [
+                Text('${double.tryParse(story['average_rating'].toString())?.toStringAsFixed(1) ?? '0.0'}',
+                    style: const TextStyle(color: Colors.white, fontSize: 11)),
+                const Icon(Icons.star, color: Colors.amber, size: 12),
+                const SizedBox(width: 8),
+                Text('${story['total_views'] ?? 0} views',
+                    style: const TextStyle(color: Colors.grey, fontSize: 11)),
+              ]),
+            ])),
+          ]),
         ),
-        SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                description,
-                style: TextStyle(color: Colors.grey, fontSize: 12),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              SizedBox(height: 4),
-              Row(
-                children: [
-                  Text("$rating", style: TextStyle(color: Colors.white)),
-                  Icon(Icons.star, color: Colors.amber, size: 14),
-                  SizedBox(width: 8),
-                  Text(tag, style: TextStyle(color: depperBlue, fontSize: 10)),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+      );
+    }).toList(),
+  );
 
-  Widget _buildCompletedStoryGridItem(String title, String tag) {
-    return Container(
-      width: 80,
-      margin: EdgeInsets.only(right: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              color: Color(0xFF2A2A2A),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Center(
-              child: Icon(Icons.book, color: Colors.grey, size: 20),
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(color: Colors.white, fontSize: 9),
-            maxLines: 1,
-            textAlign: TextAlign.left,
-            overflow: TextOverflow.ellipsis,
-          ),
-
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: const Color.fromARGB(40, 2, 137, 209),
-            ),
-            child: Text(tag, style: TextStyle(color: depperBlue, fontSize: 8)),
-          ),
-        ],
+  Widget _shimmerRow() => Container(
+    height: 170, margin: const EdgeInsets.symmetric(horizontal: 16),
+    child: ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: 4,
+      itemBuilder: (_, __) => Container(
+        width: 85, margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(color: const Color(0xFF2A2A2A), borderRadius: BorderRadius.circular(8)),
       ),
-    );
+    ),
+  );
+
+  Widget _bookPlaceholder() => Container(
+    color: const Color(0xFF2A2A2A),
+    child: const Center(child: Icon(Icons.book, color: Colors.grey, size: 30)),
+  );
+
+  void _showSearch(BuildContext context) {
+    showSearch(context: context, delegate: _StorySearchDelegate(ctrl));
+  }
+}
+
+class _StorySearchDelegate extends SearchDelegate {
+  final ExploreController ctrl;
+  _StorySearchDelegate(this.ctrl);
+
+  @override
+  ThemeData appBarTheme(BuildContext context) => ThemeData.dark().copyWith(
+    appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF1a1a1a)),
+  );
+
+  @override
+  List<Widget> buildActions(BuildContext context) =>
+      [IconButton(icon: const Icon(Icons.clear), onPressed: () => query = '')];
+
+  @override
+  Widget buildLeading(BuildContext context) =>
+      IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => close(context, null));
+
+  @override
+  Widget buildResults(BuildContext context) {
+    ctrl.search(query);
+    return Obx(() => ListView.builder(
+      itemCount: ctrl.forYou.length,
+      itemBuilder: (_, i) {
+        final story = ctrl.forYou[i];
+        return ListTile(
+          leading: const Icon(Icons.book, color: Colors.grey),
+          title: Text(story['title'] ?? '', style: const TextStyle(color: Colors.white)),
+          subtitle: Text(story['author']?['username'] ?? '', style: const TextStyle(color: Colors.grey)),
+          onTap: () {
+            close(context, null);
+            Navigator.push(context, CupertinoPageRoute(
+                builder: (_) => StoryDetailScreen(slug: story['slug'])));
+          },
+        );
+      },
+    ));
   }
 
-  Widget _buildWorldFamousGrid() {
-    final items = [
-      {
-        "title": "Pride and Prejudice",
-        "author": "Jane Austen",
-        "rating": 4.5,
-        "tag": "Social class",
-      },
-      {
-        "title": "Othello, the Moor of Venice",
-        "author": "William Shakespeare",
-        "tag": "Military hero",
-      },
-      {"title": "Oliver Twist - Charles Dicke...", "tag": "London underworld"},
-      {"title": "Heart of Darkness", "tag": "Colonialism"},
-    ];
-
-    return Container(
-      height: 190,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return Container(
-            width: 80,
-            margin: EdgeInsets.only(right: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(child: Icon(Icons.book, color: Colors.grey)),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  item["title"].toString(),
-                  style: TextStyle(color: Colors.white, fontSize: 10),
-                  maxLines: 2,
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (item["rating"] != null)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "${item["rating"]}",
-                        style: TextStyle(color: Colors.white, fontSize: 9),
-                      ),
-                      Icon(Icons.star, color: Colors.amber, size: 10),
-                    ],
-                  ),
-
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 4, vertical: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: const Color.fromARGB(40, 2, 137, 209),
-                  ),
-                  child: Text(
-                    item["tag"].toString(),
-                    style: TextStyle(color: depperBlue, fontSize: 8),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildFeaturedList() {
-    final items = [
-      {
-        "title": "One Dollar Flash Sale",
-        "description":
-            "Charles Matthews, a recent college graduate, found himself in a tough spot...",
-        "rating": 4.1,
-        "views": "23.0K Views",
-        "tags": ["System", "Rags-to-Riches"],
-      },
-      {
-        "title": "THE SEVENTH SON",
-        "description":
-            "How far would a father go to save his sons?? What lengths would he take?? H...",
-        "rating": 5.0,
-        "views": "1.4K Views",
-        "tags": ["Curse", "Revenge"],
-      },
-      {
-        "title": "The Alchemist",
-        "description":
-            "\"The Alchemist\" by Ben Jonson is a comedic play likely written in the early ...",
-        "rating": 3.0,
-        "views": "2.3K Views",
-        "tags": ["Hispanic culture", "Self - discovery"],
-      },
-      {
-        "title": "The Alchemist",
-        "description":
-            "\"The Alchemist\" by Ben Jonson is a comedic play likely written in the early ...",
-        "rating": 3.0,
-        "views": "2.3K Views",
-        "tags": ["Hispanic culture", "Self - discovery"],
-      },
-      {
-        "title": "THE SEVENTH SON",
-        "description":
-            "How far would a father go to save his sons?? What lengths would he take?? H...",
-        "rating": 5.0,
-        "views": "1.4K Views",
-        "tags": ["Curse", "Revenge"],
-      },
-      {
-        "title": "One Dollar Flash Sale",
-        "description":
-            "Charles Matthews, a recent college graduate, found himself in a tough spot...",
-        "rating": 4.1,
-        "views": "23.0K Views",
-        "tags": ["System", "Rags-to-Riches"],
-      },
-    ];
-
-    return Column(
-      children: items.map((item) => _buildFeaturedItem(item)).toList(),
-    );
-  }
-
-  Widget _buildFeaturedItem(Map<String, dynamic> item) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            width: 80,
-            height: 110,
-            decoration: BoxDecoration(
-              color: Color(0xFF2A2A2A),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Center(child: Icon(Icons.book, color: Colors.grey)),
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item["title"],
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  item["description"],
-                  style: TextStyle(color: Colors.grey, fontSize: 10),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      "${item["rating"]}",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    Icon(Icons.star, color: Colors.amber, size: 12),
-                    SizedBox(width: 8),
-                    Text(
-                      item["views"],
-                      style: TextStyle(color: Colors.grey, fontSize: 10),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Wrap(
-                  children:
-                      (item["tags"] as List<String>)
-                          .map((tag) => _buildTag(tag))
-                          .toList(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTag(String text) {
-    return Container(
-      margin: EdgeInsets.only(right: 6, bottom: 4),
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: depperBlue.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(text, style: TextStyle(color: depperBlue, fontSize: 8)),
-    );
-  }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      height: 80,
-      decoration: BoxDecoration(
-        color: Color(0xFF1A1A1A),
-        border: Border(top: BorderSide(color: Color(0xFF2A2A2A))),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.library_books, "Library", false),
-          _buildNavItem(Icons.explore, "Explore", true),
-          _buildNavItem(Icons.apps, "Genres", false),
-          _buildNavItem(Icons.person, "Me", false),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isSelected) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, color: isSelected ? Colors.amber : Colors.grey, size: 24),
-        SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.amber : Colors.grey,
-            fontSize: 12,
-          ),
-        ),
-      ],
-    );
-  }
+  @override
+  Widget buildSuggestions(BuildContext context) => buildResults(context);
 }

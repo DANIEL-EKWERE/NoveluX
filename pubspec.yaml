@@ -39,10 +39,12 @@ dependencies:
   shared_preferences:
   font_awesome_flutter: 
   http:
+  shimmer:
+  cached_network_image:
   url_launcher:
   carousel_slider:
-  flutter_native_splash:
   badges:
+  flutter_native_splash:
   pull_to_refresh_flutter3:
   flutter_inappwebview:
   atomic_webview:
@@ -60,6 +62,7 @@ dependencies:
   local_auth:
   file_picker: 
   lucide_icons_flutter: ^3.0.8
+  # google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
