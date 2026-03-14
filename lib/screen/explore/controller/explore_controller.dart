@@ -69,6 +69,16 @@ class ExploreController extends GetxController {
     }
   }
 
+  Future<void> filterByGenre(String genreSlug) async {
+    selectedGenre.value = genreSlug;
+    final res = await ApiService.getStories(genre: genreSlug);
+    if (res['success']) {
+      forYou.value = res['data'] is List
+          ? res['data']
+          : (res['data']['results'] ?? []);
+    }
+  }
+
   Future<void> search(String query) async {
     searchQuery.value = query;
     final res = await ApiService.getStories(search: query);
@@ -79,8 +89,12 @@ class ExploreController extends GetxController {
 
   String getCoverUrl(Map story) {
     final cover = story['cover_image'];
-    if (cover == null || cover.toString().isEmpty) return '';
-    if (cover.toString().startsWith('http')) return cover.toString();
+    if (cover == null || cover.toString().isEmpty) {
+      return '';
+    }
+    if (cover.toString().startsWith('http')) {
+      return cover.toString();
+    }
     return 'http://10.0.2.2:8000$cover';
   }
 }

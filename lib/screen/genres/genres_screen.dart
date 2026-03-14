@@ -1,156 +1,64 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:novelux/config/app_style.dart';
+import 'package:novelux/screen/book_preview/story_detail_screen.dart';
+import 'package:novelux/screen/genres/controller/genres_controller.dart';
 
-class GenresScreen extends StatefulWidget {
+class GenresScreen extends StatelessWidget {
   const GenresScreen({super.key});
 
   @override
-  State<GenresScreen> createState() => _GenresScreenState();
-}
-
-class _GenresScreenState extends State<GenresScreen> {
-  int selectedGenreIndex = 0;
-
-  final List<String> genres = [
-    'Romance',
-    'Werewolf',
-    'CEO',
-    'Billionaire',
-    'Mafia',
-    'Reborn/Revenge',
-    'Marriage Before Love',
-    'Strong Female Lead',
-    'Wealthy Families',
-    'Teen Fiction',
-    'Male Lead',
-    'Princess',
-    'Doctor',
-    'Contract Marriage',
-  ];
-
-  final List<Map<String, dynamic>> books = [
-    {
-      'title': 'The Revenge Marriage...',
-      'subtitle':
-          'Original title:My Ex-Wife is Pregnant Again Callum Blackwell married the wido...',
-      'rating': 4.2,
-      'views': '20.8K Views',
-      'tag': 'pregnant',
-      'image': 'assets/book1.jpg',
-    },
-    {
-      'title': 'Sweet Desire',
-      'subtitle':
-          'She looked at the man sitting next to her dad in disgust, she couldn\'t believe she ha...',
-      'rating': 4.8,
-      'views': '10.8K Views',
-      'tag': 'Love Triangle',
-      'image': 'assets/book2.jpg',
-    },
-    {
-      'title': 'You are the most pre...',
-      'subtitle':
-          'Since five years ago, Melissa had been suffering from a painful incident due to whic...',
-      'rating': 5.0,
-      'views': '2.6K Views',
-      'tag': 'Boss-Employee',
-      'image': 'assets/book3.jpg',
-    },
-    {
-      'title': 'The Mistaken Identity',
-      'subtitle':
-          'Kalliyah\'s twin sister, Alliyah decides to have an affair with an older man. The affa...',
-      'rating': 4.7,
-      'views': '3.4K Views',
-      'tag': 'Mistaken Identity',
-      'image': 'assets/book4.jpg',
-    },
-    {
-      'title': 'The Debt of kiss lasts...',
-      'subtitle':
-          'This story is about a rich CEO of the country, whose life is a mystery for everyon...',
-      'rating': 4.4,
-      'views': '8.0K Views',
-      'tag': 'CEO',
-      'image': 'assets/book5.jpg',
-    },
-  ];
-
-  @override
   Widget build(BuildContext context) {
+    final ctrl = Get.put(GenresController());
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color(0xFF1a1a1a),
+        backgroundColor: const Color(0xFF1a1a1a),
         elevation: 0,
-        title: Text(
-          'Genres',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-        ),
+        title: const Text('Genres',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Colors.white)),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons.search, color: Colors.white),
             onPressed: () {},
           ),
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(color: Color(0xFF1a1a1a)),
-        child: Row(
-          children: [
-            // Left sidebar with genres
-            Container(
-              width: 90,
-              color: Color(0xFF1a1a1a),
+        color: const Color(0xFF1a1a1a),
+        child: Obx(() {
+          if (ctrl.genres.isEmpty && ctrl.isLoading.value) {
+            return const Center(child: CircularProgressIndicator(color: Colors.blue));
+          }
+          return Row(children: [
+            // ── Left sidebar: genres ───────────────────────────────────────
+            SizedBox(
+              width: 95,
               child: ListView.builder(
-                itemCount: genres.length,
-                itemBuilder: (context, index) {
-                  //bool isSelected = index == 0; // Romance is selected
-                  return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color:
-                          selectedGenreIndex == index
-                              ? Colors.transparent
-                              : Colors.transparent,
-                      border: Border(
-                        left: BorderSide(
-                          color:
-                              selectedGenreIndex == index
-                                  ? depperBlue
-                                  : Colors.transparent,
-                          width: 3,
+                itemCount: ctrl.genres.length,
+                itemBuilder: (_, i) {
+                  final genre   = ctrl.genres[i];
+                  final isSelected = ctrl.selectedIndex.value == i;
+                  return GestureDetector(
+                    onTap: () => ctrl.selectGenre(i, genre['slug'].toString()),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(
+                            color: isSelected ? depperBlue : Colors.transparent,
+                            width: 3,
+                          ),
                         ),
                       ),
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        print(
-                          'Selected genre: ${genres[index]} "at index $index',
-                        );
-                        // Handle genre selection
-                        setState(() {
-                          //isSelected = index == index;
-                          selectedGenreIndex = index;
-                        });
-                        print('Selected $selectedGenreIndex');
-                      },
                       child: Text(
-                        genres[index],
+                        genre['name'] ?? '',
                         style: TextStyle(
-                          color:
-                              selectedGenreIndex == index
-                                  ? depperBlue
-                                  : Colors.grey[400],
-                          fontSize: 10,
-                          fontWeight:
-                              selectedGenreIndex == index
-                                  ? FontWeight.w500
-                                  : FontWeight.normal,
+                          color: isSelected ? depperBlue : Colors.grey[400],
+                          fontSize: 11,
+                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -158,196 +66,106 @@ class _GenresScreenState extends State<GenresScreen> {
                 },
               ),
             ),
-            // Right content area
+
+            // ── Right: stories for selected genre ─────────────────────────
             Expanded(
               child: Container(
-                decoration: BoxDecoration(
-                  // gradient: LinearGradient(
-                  //   colors: [Color(0xFF1a1a1a), Color(0xFF2a2a2a)],
-                  //   begin: Alignment.topCenter,
-                  //   end: Alignment.bottomCenter,
-                  // ),
+                decoration: const BoxDecoration(
                   color: Color(0xFF2a2a2a),
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(24)),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20)),
                 ),
-                // color: Color(0xFF2a2a2a),
-                child: ListView.builder(
-                  padding: EdgeInsets.all(16),
-                  itemCount: books.length,
-                  itemBuilder: (context, index) {
-                    final book = books[index];
-                    return Container(
-                      margin: EdgeInsets.only(bottom: 16),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Book cover placeholder
-                          Container(
-                            width: 80,
-                            height: 100,
-                            decoration: BoxDecoration(
+                child: Obx(() {
+                  if (ctrl.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator(color: Colors.blue));
+                  }
+                  if (ctrl.stories.isEmpty) {
+                    return Center(
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        Icon(Icons.book_outlined, color: Colors.grey[700], size: 50),
+                        const SizedBox(height: 12),
+                        const Text('No stories in this genre yet',
+                            style: TextStyle(color: Colors.grey, fontSize: 13)),
+                      ]),
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(14),
+                    itemCount: ctrl.stories.length,
+                    itemBuilder: (_, i) {
+                      final story    = ctrl.stories[i];
+                      final coverUrl = ctrl.getCoverUrl(story);
+                      final tags     = (story['tags'] as List? ?? []);
+                      return GestureDetector(
+                        onTap: () => Navigator.push(context, CupertinoPageRoute(
+                            builder: (_) => StoryDetailScreen(slug: story['slug']))),
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            // Cover
+                            ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              gradient: LinearGradient(
-                                colors: _getGradientColors(index),
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                              child: SizedBox(
+                                width: 80, height: 108,
+                                child: coverUrl.isNotEmpty
+                                    ? Image.network(coverUrl, fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => _placeholder())
+                                    : _placeholder(),
                               ),
                             ),
-                            child: Stack(
-                              children: [
-                                // Placeholder for book cover image
-                                Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: Colors.black26,
-                                  ),
-                                ),
-                                // Book title overlay
-                                Positioned(
-                                  bottom: 8,
-                                  left: 8,
-                                  right: 8,
-                                  child: Text(
-                                    _getBookTitleOverlay(index),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black54,
-                                          offset: Offset(1, 1),
-                                        ),
-                                      ],
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 12),
-                          // Book details
-                          Expanded(
-                            child: Column(
+                            const SizedBox(width: 12),
+                            // Details
+                            Expanded(child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  book['title'],
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  book['subtitle'],
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 10,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Text(
-                                      book['rating'].toString(),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                Text(story['title'] ?? '',
+                                    style: const TextStyle(color: Colors.white,
+                                        fontSize: 13, fontWeight: FontWeight.w600),
+                                    maxLines: 1, overflow: TextOverflow.ellipsis),
+                                const SizedBox(height: 4),
+                                Text(story['description'] ?? '',
+                                    style: TextStyle(color: Colors.grey[400], fontSize: 11),
+                                    maxLines: 2, overflow: TextOverflow.ellipsis),
+                                const SizedBox(height: 8),
+                                Row(children: [
+                                  Text(
+                                    '${double.tryParse(story['average_rating'].toString())?.toStringAsFixed(1) ?? '0.0'}',
+                                    style: const TextStyle(color: Colors.white,
+                                        fontSize: 11, fontWeight: FontWeight.w500)),
+                                  const SizedBox(width: 2),
+                                  const Icon(Icons.star, color: Color(0xFFFFD700), size: 12),
+                                  const SizedBox(width: 10),
+                                  Text('${story['total_views'] ?? 0} views',
+                                      style: TextStyle(color: Colors.grey[400], fontSize: 11)),
+                                ]),
+                                const SizedBox(height: 6),
+                                if (tags.isNotEmpty)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: depperBlue.withOpacity(0.15),
+                                      borderRadius: BorderRadius.circular(4),
                                     ),
-                                    SizedBox(width: 4),
-                                    Icon(
-                                      Icons.star,
-                                      color: Color(0xFFFFD700),
-                                      size: 10,
-                                    ),
-                                    SizedBox(width: 12),
-                                    Text(
-                                      book['views'],
-                                      style: TextStyle(
-                                        color: Colors.grey[400],
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 8),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
+                                    child: Text(tags[0]['name'] ?? '',
+                                        style: TextStyle(color: depperBlue, fontSize: 10)),
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: depperBlue.withValues(alpha: .2),
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    book['tag'],
-                                    style: TextStyle(
-                                      color: depperBlue,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
                               ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                            )),
+                          ]),
+                        ),
+                      );
+                    },
+                  );
+                }),
               ),
             ),
-          ],
-        ),
+          ]);
+        }),
       ),
-      // bottomNavigationBar: _buildBottomNavigationBar(0),
     );
   }
 
-  List<Color> _getGradientColors(int index) {
-    switch (index) {
-      case 0:
-        return [Colors.pink[300]!, Colors.purple[300]!];
-      case 1:
-        return [Colors.green[300]!, Colors.teal[300]!];
-      case 2:
-        return [Colors.blue[300]!, Colors.cyan[300]!];
-      case 3:
-        return [Colors.grey[800]!, Colors.grey[600]!];
-      case 4:
-        return [Colors.green[400]!, Colors.green[600]!];
-      default:
-        return [Colors.blue[300]!, Colors.purple[300]!];
-    }
-  }
-
-  String _getBookTitleOverlay(int index) {
-    switch (index) {
-      case 0:
-        return 'Hidden Heir';
-      case 1:
-        return 'Sweet Desire';
-      case 2:
-        return 'Me First Precious Me';
-      case 3:
-        return 'Mistaken Identity';
-      case 4:
-        return 'The Debt of Kiss Lasts Forever';
-      default:
-        return '';
-    }
-  }
+  Widget _placeholder() => Container(
+    color: const Color(0xFF3a3a3a),
+    child: const Center(child: Icon(Icons.book, color: Colors.grey, size: 28)),
+  );
 }

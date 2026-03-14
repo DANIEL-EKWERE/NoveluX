@@ -142,7 +142,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
             onTap: () {
               setState(() => selectedCategoryIndex = i);
               final slug = genres[i]['slug'] ?? '';
-              if (slug.isEmpty) ctrl.fetchForYou(); else ctrl.filterByGenre(slug.toString());
+              if (slug.isEmpty) {
+                ctrl.fetchForYou();
+              } else {
+                ctrl.filterByGenre(slug.toString());
+              }
             },
             child: Container(
               margin: const EdgeInsets.only(right: 8),
@@ -185,7 +189,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
   );
 
   Widget _buildFeaturedCarousel() => Obx(() {
-    if (ctrl.featured.isEmpty) return const SizedBox(height: 170, child: Center(child: CircularProgressIndicator(color: Colors.blue)));
+    if (ctrl.featured.isEmpty) {
+      return const SizedBox(height: 170, child: Center(child: CircularProgressIndicator(color: Colors.blue)));
+    }
     return SizedBox(
       height: 170,
       child: CarouselSlider.builder(

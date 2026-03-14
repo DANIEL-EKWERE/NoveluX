@@ -75,8 +75,12 @@ class AuthorDashboardController extends GetxController {
 
   String getCoverUrl(Map story) {
     final c = story['cover_image'];
-    if (c == null || c.toString().isEmpty) return '';
-    if (c.toString().startsWith('http')) return c.toString();
+    if (c == null || c.toString().isEmpty) {
+      return '';
+    }
+    if (c.toString().startsWith('http')) {
+      return c.toString();
+    }
     return 'http://10.0.2.2:8000$c';
   }
 }

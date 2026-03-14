@@ -137,8 +137,12 @@ class ReadingInterfaceController extends GetxController {
 
   Color get currentBackgroundColor => backgroundColors[selectedBackground];
   Color get currentTextColor {
-    if (selectedBackground == 4) return Colors.white;
-    if (selectedBackground == 0) return const Color(0xFF8B4513);
+    if (selectedBackground == 4) {
+      return Colors.white;
+    }
+    if (selectedBackground == 0) {
+      return const Color(0xFF8B4513);
+    }
     return Colors.black87;
   }
 

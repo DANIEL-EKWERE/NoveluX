@@ -47,8 +47,12 @@ class StoryDetailController extends GetxController {
 
   String getCoverUrl(Map? s) {
     final cover = s?['cover_image'];
-    if (cover == null || cover.toString().isEmpty) return '';
-    if (cover.toString().startsWith('http')) return cover.toString();
+    if (cover == null || cover.toString().isEmpty) {
+      return '';
+    }
+    if (cover.toString().startsWith('http')) {
+      return cover.toString();
+    }
     return 'http://10.0.2.2:8000$cover';
   }
 }

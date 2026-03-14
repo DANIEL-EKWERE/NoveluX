@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novelux/config/api_service.dart';
 import 'package:novelux/config/app_style.dart';
+import 'package:novelux/screen/book_preview/story_detail_screen.dart';
 
 class ViewAllScreen extends StatefulWidget {
   const ViewAllScreen({super.key});
@@ -9,269 +12,204 @@ class ViewAllScreen extends StatefulWidget {
   State<ViewAllScreen> createState() => _ViewAllScreenState();
 }
 
-String searchQuery = "One Pregnancy's Triplets: Daddy is So Am...";
-int selectedIndex = 0;
-List tags = [
-  'completed',
-  'childhood sweetheart',
-  'Revenge',
-  'Betrayal',
-  'Strong female lead',
-  'love Triangle',
-  'Dating',
-  'Age Group',
-];
-
 class _ViewAllScreenState extends State<ViewAllScreen> {
+  final RxList stories    = [].obs;
+  final RxBool isLoading  = true.obs;
+  int page                = 1;
+  bool hasMore            = true;
+  late ScrollController _sc;
+  String title            = '';
+
+  @override
+  void initState() {
+    super.initState();
+    title = Get.arguments?.toString() ?? 'Stories';
+    _sc = ScrollController()..addListener(_onScroll);
+    _fetchStories();
+  }
+
+  @override
+  void dispose() {
+    _sc.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_sc.position.pixels >= _sc.position.maxScrollExtent - 200 && !isLoading.value && hasMore) {
+      page++;
+      _fetchStories(append: true);
+    }
+  }
+
+  Future<void> _fetchStories({bool append = false}) async {
+    isLoading.value = true;
+    Future<Map<String, dynamic>> Function() fetcher;
+
+    switch (title) {
+      case 'Trending Now':
+        fetcher = () => ApiService.getTrending();
+        break;
+      case "Editor's Pick":
+        fetcher = () => ApiService.getEditorsPick();
+        break;
+      case 'Featured':
+        fetcher = () => ApiService.getFeatured();
+        break;
+      default:
+        fetcher = () => ApiService.getStories(page: page);
+    }
+
+    final res = await fetcher();
+    isLoading.value = false;
+    if (res['success']) {
+      final data = res['data'];
+      final List newItems = data is List ? data : (data['results'] ?? []);
+      if (append) {
+        stories.addAll(newItems);
+      } else {
+        stories.value = newItems;
+      }
+      hasMore = (data is Map && data['next'] != null);
+    }
+  }
+
+  String _getCoverUrl(Map story) {
+    final c = story['cover_image'];
+    if (c == null || c.toString().isEmpty) { return ''; }
+    if (c.toString().startsWith('http')) { return c.toString(); }
+    return 'http://10.0.2.2:8000$c';
+  }
+
   @override
   Widget build(BuildContext context) {
-    var title = Get.arguments;
     return Scaffold(
+      backgroundColor: const Color(0xFF1A1A1A),
       appBar: AppBar(
         leading: GestureDetector(
-          onTap: () {
-            Get.back();
-          },
-          child: Icon(Icons.chevron_left, color: Colors.white),
+          onTap: () => Get.back(),
+          child: const Icon(Icons.chevron_left, color: Colors.white, size: 28),
         ),
         centerTitle: true,
-        title: Text(
-          title,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Color(0xFF1A1A1A),
+        title: Text(title,
+            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        backgroundColor: const Color(0xFF1A1A1A),
+        elevation: 0,
       ),
-      backgroundColor: Color(0xFF1A1A1A),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Container(
-                //   padding: EdgeInsets.all(16),
-                //   child: Container(
-                //     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                //     decoration: BoxDecoration(
-                //       color: Color(0xFF2A2A2A),
-                //       borderRadius: BorderRadius.circular(25),
-                //     ),
-                //     child: Row(
-                //       children: [
-                //         Icon(Icons.search, color: Colors.grey, size: 18),
-                //         SizedBox(width: 10),
-                //         Expanded(
-                //           child: Text(
-                //             searchQuery,
-                //             style: TextStyle(color: Colors.grey, fontSize: 12),
-                //             overflow: TextOverflow.ellipsis,
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                viewAllCard(),
-                viewAllCard(),
-                viewAllCard(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+        child: Obx(() {
+          if (isLoading.value && stories.isEmpty) {
+            return const Center(child: CircularProgressIndicator(color: Colors.blue));
+          }
+          if (stories.isEmpty) {
+            return Center(
+              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Icon(Icons.book_outlined, color: Colors.grey[700], size: 60),
+                const SizedBox(height: 16),
+                const Text('No stories found', style: TextStyle(color: Colors.grey, fontSize: 16)),
+              ]),
+            );
+          }
+          return ListView.builder(
+            controller: _sc,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            itemCount: stories.length + (isLoading.value ? 1 : 0),
+            itemBuilder: (_, i) {
+              if (i == stories.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Center(child: CircularProgressIndicator(color: Colors.blue)),
+                );
+              }
+              final story    = stories[i];
+              final coverUrl = _getCoverUrl(story);
+              final tags     = (story['tags'] as List? ?? []);
+              final author   = story['author'] ?? {};
 
-  Widget viewAllCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 12),
-        height: 230,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey[900],
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    width: 100,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Color(0xFF2A2A2A),
+              return GestureDetector(
+                onTap: () => Navigator.push(context, CupertinoPageRoute(
+                    builder: (_) => StoryDetailScreen(slug: story['slug']))),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 14),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    // Cover
+                    ClipRRect(
                       borderRadius: BorderRadius.circular(8),
+                      child: SizedBox(
+                        width: 85, height: 115,
+                        child: coverUrl.isNotEmpty
+                            ? Image.network(coverUrl, fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _placeholder())
+                            : _placeholder(),
+                      ),
                     ),
-                    child: Center(
-                      child: Icon(Icons.book, color: Colors.grey, size: 40),
-                    ),
-                  ),
-                  SizedBox(width: 5),
-                  Column(
-                    spacing: 65,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      SizedBox(
-                        width: 150,
-                        child: Text(
-                          maxLines: 2,
-                          'rtererowrwiro rwoeowprrwei rtererowrwiro rwoeowprrwei',
-                          style: TextStyle(
-                            color: Colors.white,
-                            overflow: TextOverflow.ellipsis,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                      //  SizedBox(height: 20),
-                      Row(
-                        spacing: 30,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.remove_red_eye_outlined,
-                                color: Colors.grey,
-                                size: 16,
+                    const SizedBox(width: 12),
+                    // Info
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(story['title'] ?? '',
+                            style: const TextStyle(color: Colors.white,
+                                fontWeight: FontWeight.w600, fontSize: 14),
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                        const SizedBox(height: 4),
+                        Text(author['username'] ?? '',
+                            style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                        const SizedBox(height: 6),
+                        Text(story['description'] ?? '',
+                            style: TextStyle(color: Colors.grey[400], fontSize: 11),
+                            maxLines: 2, overflow: TextOverflow.ellipsis),
+                        const SizedBox(height: 8),
+                        // Stats
+                        Row(children: [
+                          const Icon(Icons.star, color: Color(0xFFFFD700), size: 12),
+                          const SizedBox(width: 3),
+                          Text(
+                            '${double.tryParse(story['average_rating'].toString())?.toStringAsFixed(1) ?? '0.0'}',
+                            style: const TextStyle(color: Colors.white, fontSize: 11)),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.visibility_outlined, color: Colors.grey, size: 12),
+                          const SizedBox(width: 3),
+                          Text('${story['total_views'] ?? 0}',
+                              style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.menu_book_outlined, color: Colors.grey, size: 12),
+                          const SizedBox(width: 3),
+                          Text('${story['total_chapters'] ?? 0} ch',
+                              style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                        ]),
+                        const SizedBox(height: 8),
+                        // Tags
+                        if (tags.isNotEmpty)
+                          Wrap(spacing: 6, children: tags.take(3).map((t) =>
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: depperBlue.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(4),
                               ),
-                              Text(
-                                '1.3k',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.favorite_border_rounded,
-                                color: Colors.grey,
-                                size: 16,
-                              ),
-                              Text(
-                                '1.3k',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.menu_rounded,
-                                color: Colors.grey,
-                                size: 16,
-                              ),
-                              Text(
-                                '1.3k',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            // SizedBox(
-            //   height: 20,
-            //   child: Row(
-            //     children: List.generate(5, (index) {
-            //       return Container(
-            //         margin: EdgeInsets.symmetric(horizontal: 10),
-            //         decoration: BoxDecoration(color: Colors.grey),
-            //         child: Text('data'),
-            //       );
-            //     }),
-            //   ),
-            // ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: SizedBox(
-                height: 15,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(horizontal: 10),
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          color:
-                              selectedIndex == index
-                                  ? const Color.fromARGB(83, 2, 137, 209)
-                                  : Colors.grey,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        child: Text(
-                          tags[index],
-                          style: TextStyle(
-                            color:
-                                selectedIndex == index
-                                    ? depperBlue
-                                    : Colors.grey[900],
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                  separatorBuilder: (context, index) {
-                    return SizedBox(width: 8);
-                  },
-                  itemCount: 8,
+                              child: Text(t['name'] ?? '',
+                                  style: TextStyle(color: depperBlue, fontSize: 10)),
+                            ),
+                          ).toList()),
+                      ],
+                    )),
+                  ]),
                 ),
-              ),
-            ),
-            SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      'wiuworoe erieoirwfig eiorof feopweowifoio fwepwodpwocwpefioif rifwpdowipopwoc fofipofepofpwof eorffwofwpfwofi opwofpwopeif cwpocpwfwifpwof wpofwpeocwpowp fofpwofpwif pfor',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+              );
+            },
+          );
+        }),
       ),
     );
   }
+
+  Widget _placeholder() => Container(
+    color: const Color(0xFF2a2a2a),
+    child: const Center(child: Icon(Icons.book, color: Colors.grey, size: 30)),
+  );
 }

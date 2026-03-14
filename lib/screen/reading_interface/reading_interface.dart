@@ -1,745 +1,483 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:novelux/config/api_service.dart';
+import 'package:novelux/config/app_style.dart';
 import 'package:novelux/screen/reading_interface/controller/reading_interface_controller.dart';
 
 class NovelUpReadingInterface extends StatelessWidget {
-  final ReadingInterfaceController controller = Get.put(
-    ReadingInterfaceController(),
-  );
+  final String? storySlug;
+  final int?    chapterNumber;
+  final String? chapterTitle;
+
+  NovelUpReadingInterface({
+    super.key,
+    this.storySlug,
+    this.chapterNumber,
+    this.chapterTitle,
+  });
+
+  final ReadingInterfaceController controller = Get.put(ReadingInterfaceController());
 
   @override
   Widget build(BuildContext context) {
+    if (storySlug != null && chapterNumber != null) {
+      controller.loadChapter(storySlug!, chapterNumber!, chapterTitle);
+    }
+
     return Scaffold(
-      body: Obx(
-        () => Container(
-          color: controller.currentBackgroundColor,
-          child: Stack(
-            children: [
-              // Main Content
-              _buildMainContent(),
-
-              // Top Bar
-              if (controller.showTopBar) _buildTopBar(),
-
-              // Bottom Bar
-              if (controller.showBottomBar) _buildBottomBar(),
-
-              // Listen Button
-              if (controller.showListenButton &&
-                  !controller.showSettings &&
-                  !controller.showContents)
-                _buildListenButton(),
-
-              // Settings Panel
-              if (controller.showSettings)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SizedBox(height: 457, child: _buildSettingsPanel()),
-                ),
-
-              // Contents Panel
-              if (controller.showContents) _buildContentsPanel(),
-            ],
-          ),
-        ),
-      ),
+      body: Obx(() => Container(
+        color: controller.currentBackgroundColor,
+        child: Stack(children: [
+          _buildMainContent(),
+          if (controller.showTopBar)    _buildTopBar(),
+          if (controller.showBottomBar) _buildBottomBar(),
+          if (controller.showListenButton && !controller.showSettings && !controller.showContents)
+            _buildListenButton(),
+          if (controller.showSettings)
+            Align(alignment: Alignment.bottomCenter,
+                child: SizedBox(height: 420, child: _buildSettingsPanel())),
+          if (controller.showContents)  _buildContentsPanel(),
+          if (controller.isLoadingChapter.value)
+            Container(color: Colors.black45,
+                child: const Center(child: CircularProgressIndicator(color: Colors.blue))),
+        ]),
+      )),
     );
   }
 
+  // ── Main scrollable content ──────────────────────────────────────────────
   Widget _buildMainContent() {
     return GestureDetector(
       onTap: controller.onScreenTap,
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         height: double.infinity,
-        child: SingleChildScrollView(
+        child: Obx(() => SingleChildScrollView(
           controller: controller.scrollController,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          child: Text(
-            _getSampleContent(),
-            style: TextStyle(
-              fontSize: controller.fontSize,
-              color: controller.currentTextColor,
-              height: controller.currentLineHeight,
-              fontFamily:
-                  controller.selectedFont == 'System'
-                      ? null
-                      : controller.selectedFont,
+          padding: const EdgeInsets.fromLTRB(20, 80, 20, 40),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            // Chapter title
+            Text(
+              controller.currentChapter,
+              style: TextStyle(
+                fontSize: controller.fontSize + 4,
+                fontWeight: FontWeight.bold,
+                color: controller.currentTextColor,
+                fontFamily: controller.selectedFont == 'System' ? null : controller.selectedFont,
+              ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTopBar() {
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        height: kToolbarHeight + 10,
-        decoration: BoxDecoration(
-          color: controller.currentBackgroundColor,
-          // gradient: LinearGradient(
-          //   begin: Alignment.topCenter,
-          //   end: Alignment.bottomCenter,
-          //   colors: [Colors.black54, Colors.transparent],
-          // ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  onPressed: () => Get.back(),
-                ),
-                Expanded(
-                  child: Text(
-                    controller.currentChapter,
-                    style: TextStyle(color: Colors.white, fontSize: 10),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Spacer(),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.orange,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.star, color: Colors.white, size: 14),
-                      Text(
-                        '+${controller.coins} coins',
-                        style: TextStyle(color: Colors.white, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ),
-                // IconButton(
-                //   icon: Icon(Icons.menu, color: Colors.white),
-                //   onPressed: () {},
-                // ),
-                SizedBox(width: 8),
-                SizedBox(
-                  height: 25,
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    label: Text(
-                      'Menu',
-                      style: TextStyle(color: Colors.grey, fontSize: 10),
-                    ),
-                    icon: Icon(Icons.menu, color: Colors.grey, size: 10),
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                    ),
-                  ),
-                ),
-              ],
+            const SizedBox(height: 20),
+            // Content
+            Text(
+              controller.chapterContent.value.isNotEmpty
+                  ? controller.chapterContent.value
+                  : 'Loading chapter content...',
+              style: TextStyle(
+                fontSize: controller.fontSize,
+                color: controller.currentTextColor,
+                height: controller.currentLineHeight,
+                fontFamily: controller.selectedFont == 'System' ? null : controller.selectedFont,
+              ),
             ),
-          ),
-        ),
+            const SizedBox(height: 40),
+            // End of chapter actions
+            if (!controller.isLoadingChapter.value && controller.chapterContent.value.isNotEmpty)
+              _buildEndOfChapterActions(),
+            const SizedBox(height: 80),
+          ]),
+        )),
       ),
     );
   }
 
-  Widget _buildBottomBar() {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [Colors.black54, Colors.transparent],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildBottomBarButton(
-                  Icons.list,
-                  'Contents',
-                  controller.toggleContents,
-                ),
-                _buildBottomBarButton(Icons.dark_mode, 'Dark mode', () {}),
-                _buildBottomBarButton(
-                  Icons.settings,
-                  'Settings',
-                  controller.toggleSettings,
-                ),
-                _buildBottomBarButton(Icons.download, 'Download', () {}),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomBarButton(
-    IconData icon,
-    String label,
-    VoidCallback onPressed,
-  ) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 24),
-          SizedBox(height: 4),
-          Text(label, style: TextStyle(color: Colors.white, fontSize: 10)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildListenButton() {
-    return Positioned(
-      bottom: 100,
-      right: 20,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.headphones, color: Colors.white, size: 20),
-            Text('Listen', style: TextStyle(color: Colors.white, fontSize: 10)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsPanel() {
+  // ── End-of-chapter: tip + comment ────────────────────────────────────────
+  Widget _buildEndOfChapterActions() {
     return Container(
-      color: controller.currentBackgroundColor,
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Settings Header
-            // Container(
-            //   padding: EdgeInsets.all(16),
-            //   child: Row(
-            //     children: [
-            //       IconButton(
-            //         icon: Icon(Icons.arrow_back_ios),
-            //         onPressed: controller.hideAllControls,
-            //       ),
-            //       Expanded(
-            //         child: Text(
-            //           controller.currentChapter,
-            //           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            //           textAlign: TextAlign.center,
-            //         ),
-            //       ),
-            //       Container(
-            //         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            //         decoration: BoxDecoration(
-            //           color: Colors.orange,
-            //           borderRadius: BorderRadius.circular(15),
-            //         ),
-            //         child: Row(
-            //           mainAxisSize: MainAxisSize.min,
-            //           children: [
-            //             Icon(Icons.star, color: Colors.white, size: 16),
-            //             Text('+${controller.coins} coins',
-            //                 style: TextStyle(color: Colors.white, fontSize: 12)),
-            //           ],
-            //         ),
-            //       ),
-            //       IconButton(
-            //         icon: Icon(Icons.menu),
-            //         onPressed: () {},
-            //       ),
-            //     ],
-            //   ),
-            // ),
-
-            // Settings Content
-            Expanded(
-              child: Container(
-                height: 50,
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Brightness
-                    Text(
-                      'Brightness',
-                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                    ),
-                    // SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.brightness_low,
-                          color: Colors.grey,
-                          size: 18,
-                        ),
-                        Expanded(
-                          child: Obx(
-                            () => Slider(
-                              value: controller.brightness,
-                              onChanged: controller.setBrightness,
-                              activeColor: Colors.orange,
-                              inactiveColor: Colors.grey[300],
-                            ),
-                          ),
-                        ),
-                        Icon(
-                          Icons.brightness_high,
-                          color: Colors.grey,
-                          size: 18,
-                        ),
-                      ],
-                    ),
-
-                    //  SizedBox(height: 30),
-
-                    // Font Size
-                    Text(
-                      'Font size',
-                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                    ),
-                    //   SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Text(
-                          'A-',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                        Expanded(
-                          child: Obx(
-                            () => Slider(
-                              value: controller.fontSize,
-                              min: 12,
-                              max: 28,
-                              onChanged: controller.setFontSize,
-                              activeColor: Colors.orange,
-                              inactiveColor: Colors.grey[300],
-                            ),
-                          ),
-                        ),
-                        Text(
-                          'A+',
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-
-                    // SizedBox(height: 30),
-
-                    // Fonts
-                    Text(
-                      'Fonts',
-                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                    ),
-                    SizedBox(height: 15),
-                    Wrap(
-                      spacing: 15,
-                      children:
-                          controller.fonts
-                              .map(
-                                (font) => Obx(
-                                  () => _buildFontChip(
-                                    font,
-                                    controller.selectedFont == font,
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    // Line Spacing
-                    Text(
-                      'Line spacing',
-                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      spacing: 10,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: List.generate(
-                        4,
-                        (index) => Obx(
-                          () => _buildLineSpacingChip(
-                            index,
-                            controller.selectedLineSpacing == index,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    //  SizedBox(height: 30),
-
-                    // Background Color
-                    Text(
-                      'Background color',
-                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                    ),
-                    SizedBox(height: 15),
-                    Row(
-                      spacing: 10,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: List.generate(
-                        controller.backgroundColors.length,
-                        (index) => Obx(
-                          () => _buildColorChip(
-                            index,
-                            controller.selectedBackground == index,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    // Page Flip Effect
-                    Text(
-                      'Page flip effect',
-                      style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                    ),
-                    SizedBox(height: 15),
-                    Wrap(
-                      spacing: 6,
-                      children:
-                          controller.pageFlipEffects
-                              .map(
-                                (effect) => Obx(
-                                  () => _buildEffectChip(
-                                    effect,
-                                    controller.pageFlipEffect == effect,
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    // Volume Key Turning
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Page turning by volume keys',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Obx(
-                          () => Transform.scale(
-                            scale: .8,
-                            child: Switch(
-                              value: controller.volumeKeyTurning,
-                              onChanged:
-                                  (_) => controller.toggleVolumeKeyTurning(),
-                              activeColor: Colors.orange,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2a2a2a).withOpacity(0.9),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(children: [
+        Container(width: 40, height: 3, decoration: BoxDecoration(
+            color: Colors.grey[700], borderRadius: BorderRadius.circular(2))),
+        const SizedBox(height: 14),
+        const Text('— End of Chapter —',
+            style: TextStyle(color: Colors.white70, fontSize: 13)),
+        const SizedBox(height: 16),
+        const Text('Enjoyed this chapter? Tip the author 🎉',
+            style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 12),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [10, 50, 100, 500].map((coins) =>
+              GestureDetector(
+                onTap: () => _sendTip(coins),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.orange.withOpacity(0.4)),
+                  ),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.monetization_on, color: Colors.orange, size: 14),
+                    const SizedBox(width: 4),
+                    Text('$coins', style: const TextStyle(
+                        color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 13)),
+                  ]),
                 ),
               ),
-            ),
-          ],
+            ).toList()),
+        const SizedBox(height: 14),
+        OutlinedButton.icon(
+          onPressed: () => _showComments(Get.context!),
+          icon: const Icon(Icons.comment_outlined, size: 16),
+          label: const Text('Comments'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: depperBlue,
+            side: BorderSide(color: depperBlue),
+          ),
         ),
-      ),
+      ]),
     );
   }
 
-  Widget _buildContentsPanel() {
-    return Positioned.fill(
-      child: Container(
-        color: Color(0xFF1a1a1a),
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Header with book info
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Icon(Icons.keyboard_arrow_down, color: Colors.white),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                'https://via.placeholder.com/80x100',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                controller.bookTitle,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                '276 chapters',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.orange,
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Text(
-                              'Contents',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Text(
-                              'Notes',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+  void _sendTip(int coins) async {
+    if (storySlug == null) { return; }
+    final res = await ApiService.sendTip(storySlug!, coins);
+    if (res['success']) {
+      Get.snackbar('Tip Sent! 🎉', 'You sent $coins coins to the author',
+          backgroundColor: Colors.orange, colorText: Colors.white,
+          duration: const Duration(seconds: 2));
+    } else {
+      Get.snackbar('Error', res['error'] ?? 'Could not send tip',
+          backgroundColor: Colors.red, colorText: Colors.white);
+    }
+  }
 
-              // Chapter List Header
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'On-going',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          'Descend',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                        Icon(Icons.sort, color: Colors.white),
-                        SizedBox(width: 10),
-                        Icon(Icons.refresh, color: Colors.white),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+  void _showComments(BuildContext ctx) {
+    if (storySlug == null || chapterNumber == null) { return; }
+    final commentCtrl = TextEditingController();
+    final comments    = <Map>[].obs;
+    final loading     = true.obs;
 
-              // Chapter List
+    ApiService.getComments(storySlug!, chapterNumber!).then((res) {
+      loading.value = false;
+      if (res['success']) {
+        final d = res['data'];
+        comments.value = (d is List ? d : (d['results'] ?? [])).cast<Map>();
+      }
+    });
+
+    showModalBottomSheet(
+      context: ctx,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1a1a1a),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => DraggableScrollableSheet(
+        expand: false, initialChildSize: 0.7, maxChildSize: 0.95,
+        builder: (_, sc) => Column(children: [
+          const SizedBox(height: 8),
+          Container(width: 40, height: 4, decoration: BoxDecoration(
+              color: Colors.grey[700], borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 12),
+          const Text('Comments',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          const Divider(color: Color(0xFF2a2a2a)),
+          Expanded(
+            child: Obx(() => loading.value
+                ? const Center(child: CircularProgressIndicator(color: Colors.blue))
+                : comments.isEmpty
+                    ? const Center(child: Text('Be the first to comment!',
+                        style: TextStyle(color: Colors.grey)))
+                    : ListView.builder(
+                        controller: sc,
+                        itemCount: comments.length,
+                        itemBuilder: (_, i) {
+                          final c    = comments[i];
+                          final user = c['user'] ?? {};
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: depperBlue,
+                              radius: 18,
+                              child: Text((user['username'] ?? 'A')[0].toUpperCase(),
+                                  style: const TextStyle(color: Colors.white, fontSize: 12)),
+                            ),
+                            title: Text(user['username'] ?? '',
+                                style: const TextStyle(color: Colors.white,
+                                    fontSize: 13, fontWeight: FontWeight.bold)),
+                            subtitle: Text(c['content'] ?? '',
+                                style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                              Icon(Icons.thumb_up_outlined, size: 14, color: Colors.grey[600]),
+                              const SizedBox(width: 4),
+                              Text('${c['likes_count'] ?? 0}',
+                                  style: TextStyle(color: Colors.grey[600], fontSize: 11)),
+                            ]),
+                          );
+                        },
+                      )),
+          ),
+          // Input
+          Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 8,
+                left: 16, right: 16, top: 8),
+            child: Row(children: [
               Expanded(
-                child: ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: controller.chapters.length,
-                  itemBuilder: (context, index) {
-                    final chapter = controller.chapters[index];
-                    return Container(
-                      margin: EdgeInsets.only(bottom: 15),
-                      child: Text(
-                        chapter.title,
-                        style: TextStyle(
-                          color: index == 0 ? Colors.orange : Colors.white,
-                          fontSize: 16,
-                          fontWeight:
-                              index == 0 ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                    );
-                  },
+                child: TextField(
+                  controller: commentCtrl,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Write a comment...',
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    filled: true,
+                    fillColor: const Color(0xFF2a2a2a),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  ),
                 ),
               ),
-            ],
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () async {
+                  if (commentCtrl.text.trim().isEmpty) { return; }
+                  final res = await ApiService.postComment(
+                      storySlug!, chapterNumber!, commentCtrl.text.trim());
+                  if (res['success']) {
+                    commentCtrl.clear();
+                    comments.insert(0, res['data']);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(color: depperBlue, shape: BoxShape.circle),
+                  child: const Icon(Icons.send, color: Colors.white, size: 18),
+                ),
+              ),
+            ]),
           ),
-        ),
+        ]),
       ),
     );
   }
 
-  Widget _buildFontChip(String font, bool isSelected) {
-    return GestureDetector(
-      onTap: () => controller.setFont(font),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.orange : Colors.transparent,
-          border: Border.all(
-            color: isSelected ? Colors.orange : Colors.grey[400]!,
-          ),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          font,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[600],
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 10,
-          ),
+  // ── Top bar ───────────────────────────────────────────────────────────────
+  Widget _buildTopBar() => Positioned(
+    top: 0, left: 0, right: 0,
+    child: Container(
+      color: controller.currentBackgroundColor.withOpacity(0.95),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(children: [
+            IconButton(
+              icon: Icon(Icons.arrow_back_ios,
+                  color: controller.selectedBackground == 4 ? Colors.white : Colors.black87,
+                  size: 18),
+              onPressed: () => Get.back(),
+            ),
+            Expanded(
+              child: Obx(() => Text(controller.currentChapter,
+                  style: TextStyle(
+                    color: controller.selectedBackground == 4 ? Colors.white : Colors.black87,
+                    fontSize: 12),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis)),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(color: Colors.orange, borderRadius: BorderRadius.circular(15)),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.monetization_on, color: Colors.white, size: 14),
+                Obx(() => Text(' ${controller.coins}',
+                    style: const TextStyle(color: Colors.white, fontSize: 11))),
+              ]),
+            ),
+            const SizedBox(width: 6),
+          ]),
         ),
       ),
-    );
-  }
+    ),
+  );
 
-  Widget _buildLineSpacingChip(int index, bool isSelected) {
-    return GestureDetector(
-      onTap: () => controller.setLineSpacing(index),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.orange : Colors.transparent,
-          border: Border.all(
-            color: isSelected ? Colors.orange : Colors.grey[400]!,
-          ),
-          borderRadius: BorderRadius.circular(8),
+  // ── Bottom bar ────────────────────────────────────────────────────────────
+  Widget _buildBottomBar() => Positioned(
+    bottom: 0, left: 0, right: 0,
+    child: Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.bottomCenter, end: Alignment.topCenter,
+          colors: [Colors.black54, Colors.transparent],
         ),
-        child: Column(
-          children: List.generate(
-            3,
-            (i) => Container(
-              width: 20,
-              height: 1 + (index * 0.5),
-              margin: EdgeInsets.only(bottom: 2 + (index * 1.0)),
-              color: isSelected ? Colors.white : Colors.grey[600],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            _btnBar(Icons.list,     'Contents', controller.toggleContents),
+            _btnBar(Icons.settings, 'Settings', controller.toggleSettings),
+            _btnBar(Icons.download, 'Download', () {}),
+          ]),
+        ),
+      ),
+    ),
+  );
+
+  Widget _btnBar(IconData icon, String label, VoidCallback onTap) =>
+    GestureDetector(onTap: onTap, child: Column(mainAxisSize: MainAxisSize.min, children: [
+      Icon(icon, color: Colors.white, size: 24),
+      const SizedBox(height: 4),
+      Text(label, style: const TextStyle(color: Colors.white, fontSize: 10)),
+    ]));
+
+  // ── Listen button ─────────────────────────────────────────────────────────
+  Widget _buildListenButton() => Positioned(
+    bottom: 100, right: 20,
+    child: Container(
+      width: 60, height: 60,
+      decoration: BoxDecoration(color: Colors.black87, borderRadius: BorderRadius.circular(30)),
+      child: const Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Icon(Icons.headphones, color: Colors.white, size: 22),
+        Text('Listen', style: TextStyle(color: Colors.white, fontSize: 9)),
+      ]),
+    ),
+  );
+
+  // ── Settings panel ────────────────────────────────────────────────────────
+  Widget _buildSettingsPanel() => Container(
+    color: controller.currentBackgroundColor,
+    padding: const EdgeInsets.all(20),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Center(child: Container(width: 40, height: 4,
+          decoration: BoxDecoration(color: Colors.grey[600], borderRadius: BorderRadius.circular(2)))),
+      const SizedBox(height: 16),
+      _settingLabel('Brightness'),
+      Row(children: [
+        const Icon(Icons.brightness_low, color: Colors.grey, size: 18),
+        Expanded(child: Obx(() => Slider(
+          value: controller.brightness,
+          onChanged: controller.setBrightness,
+          activeColor: Colors.orange,
+          inactiveColor: Colors.grey[700],
+        ))),
+        const Icon(Icons.brightness_high, color: Colors.grey, size: 18),
+      ]),
+      _settingLabel('Font Size'),
+      Row(children: [
+        Text('A', style: TextStyle(fontSize: 13, color: Colors.grey[500])),
+        Expanded(child: Obx(() => Slider(
+          value: controller.fontSize, min: 12, max: 28,
+          onChanged: controller.setFontSize,
+          activeColor: Colors.orange,
+          inactiveColor: Colors.grey[700],
+        ))),
+        Text('A', style: TextStyle(fontSize: 20, color: Colors.grey[500])),
+      ]),
+      _settingLabel('Background'),
+      const SizedBox(height: 10),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(controller.backgroundColors.length, (i) =>
+          Obx(() => GestureDetector(
+            onTap: () => controller.setBackground(i),
+            child: Container(
+              width: 38, height: 24,
+              decoration: BoxDecoration(
+                color: controller.backgroundColors[i],
+                borderRadius: BorderRadius.circular(12),
+                border: controller.selectedBackground == i
+                    ? Border.all(color: Colors.orange, width: 2.5)
+                    : Border.all(color: Colors.grey[600]!),
+              ),
+            ),
+          )),
+        ),
+      ),
+      const SizedBox(height: 16),
+      _settingLabel('Fonts'),
+      const SizedBox(height: 10),
+      Obx(() => Wrap(
+        spacing: 10,
+        children: controller.fonts.map((f) =>
+          GestureDetector(
+            onTap: () => controller.setFont(f),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: controller.selectedFont == f ? Colors.orange : Colors.transparent,
+                border: Border.all(
+                    color: controller.selectedFont == f ? Colors.orange : Colors.grey[500]!),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(f,
+                  style: TextStyle(
+                    color: controller.selectedFont == f ? Colors.white : Colors.grey[500],
+                    fontSize: 11,
+                  )),
             ),
           ),
-        ),
-      ),
-    );
-  }
+        ).toList(),
+      )),
+    ]),
+  );
 
-  Widget _buildColorChip(int index, bool isSelected) {
-    return GestureDetector(
-      onTap: () => controller.setBackground(index),
-      child: Container(
-        width: 40,
-        height: 25,
-        decoration: BoxDecoration(
-          color: controller.backgroundColors[index],
-          borderRadius: BorderRadius.circular(20),
-          border:
-              isSelected ? Border.all(color: Colors.orange, width: 3) : null,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEffectChip(String effect, bool isSelected) {
-    return GestureDetector(
-      onTap: () => controller.setPageFlipEffect(effect),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.orange : Colors.transparent,
-          border: Border.all(
-            color: isSelected ? Colors.orange : Colors.grey[400]!,
+  // ── Contents panel ────────────────────────────────────────────────────────
+  Widget _buildContentsPanel() => Positioned.fill(
+    child: Container(
+      color: const Color(0xFF1a1a1a),
+      child: SafeArea(
+        child: Column(children: [
+          GestureDetector(
+            onTap: controller.hideAllControls,
+            child: const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 28),
           ),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          effect,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[600],
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 10,
+          const SizedBox(height: 8),
+          Obx(() => Text(controller.bookTitle,
+              style: const TextStyle(color: Colors.white,
+                  fontWeight: FontWeight.bold, fontSize: 17),
+              textAlign: TextAlign.center)),
+          const SizedBox(height: 4),
+          const Divider(color: Color(0xFF2a2a2a)),
+          Expanded(
+            child: Obx(() => controller.chapters.isEmpty
+                ? const Center(child: Text('No chapters loaded',
+                    style: TextStyle(color: Colors.grey)))
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: controller.chapters.length,
+                    itemBuilder: (_, i) {
+                      final ch = controller.chapters[i];
+                      final isCurrent = controller.currentChapter == ch.title;
+                      return ListTile(
+                        title: Text(ch.title,
+                            style: TextStyle(
+                              color: isCurrent ? Colors.orange : Colors.white,
+                              fontSize: 14,
+                              fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                            )),
+                        trailing: ch.isRead
+                            ? const Icon(Icons.check_circle, color: Colors.green, size: 16)
+                            : null,
+                        onTap: () {
+                          controller.hideAllControls();
+                          if (storySlug != null) {
+                            controller.loadChapter(storySlug!, i + 1, ch.title);
+                          }
+                        },
+                      );
+                    },
+                  )),
           ),
-        ),
+        ]),
       ),
-    );
-  }
-}
+    ),
+  );
 
-String _getSampleContent() {
-  return """once he got better," the group perked up with interest. "Who told you that?"
-
-"Yesterday, Sanpang came back and was talking to Su by the fish pond. I happened to overhear a bit," Aunt Wang said mysteriously. "He seemed like such a good kid, sigh."
-
-Though their voices were low, Su Yang heard every word, a bitter taste rising in his heart. For two years, he'd endured countless cold remarks and sneers.
-
-He looked down at his stomach, then gazed into the distance, his thoughts drifting far away.
-
-Three years ago, at eighteen, Su Yang had been the top scorer in the college entrance exams in Cloud Sea City, bringing honor to the entire village. Everyone had praised him as a genius, destined for great things.
-
-But fate had other plans. During his first year at university, he was involved in a terrible accident that left him in a coma for six months. When he finally woke up, he discovered that his spiritual core had been completely shattered.
-
-In this world where cultivation determined one's status and future, losing one's spiritual core was equivalent to becoming a cripple. All his dreams and aspirations crumbled in an instant.
-
-The village that had once celebrated him now whispered behind his back. Former friends avoided him, and even his own relatives treated him with pity mixed with disdain.
-
-Su Yang clenched his fists, feeling the familiar ache in his chest. But today felt different somehow. As he sat by the pond, watching the ripples spread across the water's surface, he felt a strange warmth building within him.
-
-Little did he know that this moment would mark the beginning of an extraordinary journey that would change not only his fate but the destiny of the entire realm.""";
+  Widget _settingLabel(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 4),
+    child: Text(text, style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+  );
 }

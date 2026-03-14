@@ -67,10 +67,14 @@ class ApiService {
 
   static String _extractError(dynamic decoded) {
     if (decoded is Map) {
-      if (decoded.containsKey('detail')) return decoded['detail'].toString();
+      if (decoded.containsKey('detail')) {
+        return decoded['detail'].toString();
+      }
       final firstKey = decoded.keys.first;
       final firstVal = decoded[firstKey];
-      if (firstVal is List) return '$firstKey: ${firstVal.first}';
+      if (firstVal is List) {
+        return '$firstKey: ${firstVal.first}';
+      }
       return firstVal.toString();
     }
     return decoded.toString();
