@@ -476,7 +476,8 @@ class NovelUpReadingInterface extends StatelessWidget {
                           : Colors.black87,
                   size: 18,
                 ),
-                onPressed: () => Get.back(),
+                onPressed: () => Navigator.of(Get.context!).pop(),
+                //Get.back(),
               ),
               Expanded(
                 child: Obx(
@@ -831,11 +832,11 @@ class _Gift {
 
 const _gifts = [
   _Gift('🌸', 'Flower', 0), // FREE — AdMob rewarded ad placeholder
-  _Gift('❤️', 'Like', 200),
-  _Gift('🍦', 'Ice pop', 2000),
-  _Gift('☕', 'Coffee', 5000),
-  _Gift('🍾', 'Champagne', 10000),
-  _Gift('🚗', 'Luxury Car', 30000),
+  _Gift('❤️', 'Like', 10),
+  _Gift('🍦', 'Ice pop', 50),
+  _Gift('☕', 'Coffee', 100),
+  _Gift('🍾', 'Champagne', 500),
+  _Gift('🚗', 'Luxury Car', 1000),
 ];
 
 // ─── End-of-Chapter Section ─────────────────────────────────────────────────
@@ -1065,8 +1066,7 @@ class _EndOfChapterSectionState extends State<_EndOfChapterSection> {
                         child: Stack(
                           children: [
                             Positioned(
-                              child: // Ad badge for free gift
-                                  //if (isFree)
+                              child:
                                   isFree
                                       ? Align(
                                         alignment: Alignment.topRight,
@@ -1095,14 +1095,14 @@ class _EndOfChapterSectionState extends State<_EndOfChapterSection> {
                                           ),
                                         ),
                                       )
-                                      //else
                                       : const SizedBox(height: 4),
                             ),
                             Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
+                                  // Ad badge for free gift
+
                                   // Emoji
                                   Text(
                                     gift.emoji,
