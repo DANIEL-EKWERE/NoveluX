@@ -4,9 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:novelux/config/local_storage.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.0.2.2:8000/api';
+  static const String baseUrl = 'http://127.0.0.1:8000/api';
+  //'http://10.0.2.2:8000/api';
   // Use http://localhost:8000/api for iOS simulator
-  // Use http://YOUR_PC_IP:8000/api for physical device
+  // Use http://192.168.222.146:8000/api for physical device
 
   static final DataBase _db = Get.find<DataBase>();
 
