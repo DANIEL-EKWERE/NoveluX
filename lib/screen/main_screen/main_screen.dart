@@ -43,7 +43,9 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       
         body: _getCurrentScreen(),
-        bottomNavigationBar: CustomBottomNav(
+        bottomNavigationBar: 
+        
+        CustomBottomNav(
           currentIndex: _currentIndex,
           onTap: _onTabTapped,
         ),
