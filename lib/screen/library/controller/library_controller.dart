@@ -43,7 +43,7 @@ class LibraryController extends GetxController {
     final c = story['cover_image'];
     if (c == null || c.toString().isEmpty) { return ''; }
     if (c.toString().startsWith('http')) { return c.toString(); }
-    return 'http://10.0.2.2:8000$c';
+    return 'https://10.0.2.2:8000$c';
   }
 
   Future<void> removeBookmark(String slug) async {

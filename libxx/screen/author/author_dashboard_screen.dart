@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:novelux/config/api_service.dart';
 import 'package:novelux/config/app_style.dart';
 import 'package:novelux/screen/auth/auth_controller.dart';
+import 'package:novelux/widgets/custom_image_view.dart';
 
 class AuthorDashboardController extends GetxController {
   final RxBool isLoading  = false.obs;
@@ -476,8 +477,9 @@ class _StoryCard extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: coverUrl.isNotEmpty
-              ? Image.network(coverUrl, width: 60, height: 80, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _placeholder())
+              ? CustomImageView(imagePath: coverUrl, width: 60, height: 80, fit: BoxFit.cover,
+                  //errorBuilder: (_, __, ___) => _placeholder()
+                  )
               : _placeholder(),
         ),
         const SizedBox(width: 12),

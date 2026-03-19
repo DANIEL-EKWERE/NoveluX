@@ -1161,7 +1161,7 @@ class _NovelUpReadingInterfaceState extends State<NovelUpReadingInterface>
                                                         ra.isNotEmpty
                                                             ? NetworkImage(
                                                               ra.startsWith(
-                                                                    'http',
+                                                                    'https',
                                                                   )
                                                                   ? ra
                                                                   : 'http://10.0.2.2:8000$ra',

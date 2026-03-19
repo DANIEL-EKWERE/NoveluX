@@ -5,6 +5,7 @@ import 'package:novelux/config/api_service.dart';
 import 'package:novelux/config/app_style.dart';
 import 'package:novelux/screen/auth/auth_controller.dart';
 import 'package:novelux/screen/reading_interface/reading_interface.dart';
+import 'package:novelux/widgets/custom_image_view.dart';
 
 class StoryDetailController extends GetxController {
   final RxBool isLoading         = false.obs;
@@ -112,8 +113,9 @@ class StoryDetailScreen extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     ctrl.getCoverUrl(story).isNotEmpty
-                        ? Image.network(ctrl.getCoverUrl(story), fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _coverPlaceholder())
+                        ? CustomImageView(imagePath: ctrl.getCoverUrl(story), fit: BoxFit.cover,
+                            
+                            )
                         : _coverPlaceholder(),
                     Container(
                       decoration: BoxDecoration(

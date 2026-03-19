@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ import 'package:novelux/config/app_style.dart';
 import 'package:novelux/screen/book_preview/story_detail_screen.dart';
 import 'package:novelux/screen/explore/controller/explore_controller.dart';
 import 'package:novelux/screen/view_all_screen/view_all_screen.dart';
+import 'package:novelux/widgets/custom_image_view.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -18,13 +21,24 @@ class _ExploreScreenState extends State<ExploreScreen> {
   final searchCtrl = TextEditingController();
   int selectedCategoryIndex = 0;
   int selectedRankingIndex = 0;
+  int _current = 0;
+
+  CarouselController carouselController = CarouselController();
+
+  final List<String> promoImages = [
+    'assets/images/promotion1.png',
+    'assets/images/promotion2.png',
+    'assets/images/promotion3.png',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
+      extendBodyBehindAppBar: false,
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // Search bar
@@ -45,10 +59,70 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     children: [
                       const Icon(Icons.search, color: Colors.grey, size: 18),
                       const SizedBox(width: 10),
-                      const Expanded(
-                        child: Text(
-                          'Search novels, authors, genres...',
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                      Expanded(
+                        child: AnimatedTextKit(
+                          repeatForever: true,
+                          // textList: [
+                          //   'Search novels, authors, genres...',
+                          //   'The Ashboard CRown',
+                          //   'sweet home alabama',
+                          //   'sweet chaos',
+                          //   'luna\'s betrayal',
+                          //   'unexpected desires'
+                          // ],
+                          // style: TextStyle(color: Colors.grey, fontSize: 12),
+                          // speed: const Duration(milliseconds: 100),
+                          animatedTexts: [
+                            //  FadeAnimatedText
+                            FadeAnimatedText(
+                              textStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              'Search novels, authors, genres...',
+                              duration: const Duration(milliseconds: 5000),
+                            ),
+                            FadeAnimatedText(
+                              textStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              'The Ashboard CRown',
+                              duration: const Duration(milliseconds: 5000),
+                            ),
+                            FadeAnimatedText(
+                              textStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              'sweet home alabama',
+                              duration: const Duration(milliseconds: 5000),
+                            ),
+                            FadeAnimatedText(
+                              textStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              'sweet chaos',
+                              duration: const Duration(milliseconds: 5000),
+                            ),
+                            FadeAnimatedText(
+                              textStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              'luna\'s betrayal',
+                              duration: const Duration(milliseconds: 5000),
+                            ),
+                            FadeAnimatedText(
+                              textStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              'unexpected desires',
+                              duration: const Duration(milliseconds: 5000),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -96,7 +170,110 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       ),
 
                       const SizedBox(height: 10),
+                      Stack(
+                        alignment:
+                            Alignment.bottomRight, // Positions the counter
+                        children: [
+                          SizedBox(
+                            width:
+                                double
+                                    .infinity, // Ensures the container takes full width
+                            height:
+                                100, // Increased height slightly for better visibility
+                            child: CarouselSlider.builder(
+                              itemCount: promoImages.length,
+                              itemBuilder: (
+                                BuildContext context,
+                                int index,
+                                int realIndex,
+                              ) {
+                                return Container(
+                                  width:
+                                      MediaQuery.of(
+                                        context,
+                                      ).size.width, // Full screen width
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: CustomImageView(
+                                      imagePath: promoImages[index],
+                                      fit: BoxFit.cover,
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
+                                  ),
+                                );
+                              },
+                              options: CarouselOptions(
+                                height: 100,
+                                autoPlay: true,
+                                viewportFraction:
+                                    1.0, // This makes it span across the screen
+                                enlargeCenterPage:
+                                    false, // Turn off to keep it flat and full-width
+                                autoPlayInterval: const Duration(seconds: 5),
+                                onPageChanged: (index, reason) {
+                                  setState(() {
+                                    _current =
+                                        index; // Update your index variable here
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
 
+                          // The Counter Overlay
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.0),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children:
+                                    promoImages.asMap().entries.map((entry) {
+                                      return Container(
+                                        width:
+                                            _current == entry.key
+                                                ? 12.0
+                                                : 8.0, // Active dot is slightly wider
+                                        height: 8.0,
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 4.0,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: depperBlue.withOpacity(
+                                            _current == entry.key
+                                                ? 0.9
+                                                : 0.4, // Active dot is brighter
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                              ),
+                              // Text(
+                              //   "${_current + 1} / ${promoImages.length}",
+                              //   style: const TextStyle(
+                              //     color: Colors.white,
+                              //     fontSize: 12,
+                              //     fontWeight: FontWeight.bold,
+                              //   ),
+                              // ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
                       // ── Rankings ──────────────────────────────────────────────
                       _section(
                         'Best Novels',
@@ -231,6 +408,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 style: TextStyle(
                   color: isSelected ? Colors.white : Colors.white70,
                   fontSize: 11,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -266,6 +444,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   style: TextStyle(
                     color: isSel ? Colors.white : Colors.white70,
                     fontSize: 11,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -281,48 +460,47 @@ class _ExploreScreenState extends State<ExploreScreen> {
         child: Center(child: CircularProgressIndicator(color: Colors.blue)),
       );
     }
-    return SizedBox(
+    return Container(
       height: 170,
-      child: CarouselSlider.builder(
-        itemCount: ctrl.featured.length,
-        itemBuilder: (_, i, __) {
-          final story = ctrl.featured[i];
-          final coverUrl = ctrl.getCoverUrl(story);
-          return GestureDetector(
-            onTap:
-                () => Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (_) => StoryDetailScreen(slug: story['slug']),
+      child: CarouselView(
+        itemExtent:
+            MediaQuery.of(context).size.width *
+            0.8, // Shows 80% of one card, hinting at the next
+        shrinkExtent:
+            MediaQuery.of(context).size.width *
+            0.7, // Minimum size when shrinking
+        children:
+            ctrl.featured.map((story) {
+              final coverUrl = ctrl.getCoverUrl(story);
+              return GestureDetector(
+                onTap:
+                    () => Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (_) => StoryDetailScreen(slug: story['slug']),
+                      ),
+                    ),
+                child: Container(
+                  // Margin and decoration are handled well by CarouselView's internal padding
+                  // but you can keep your styling here
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color(0xFF2A2A2A),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child:
+                        coverUrl.isNotEmpty
+                            ? CustomImageView(
+                              imagePath: coverUrl,
+                              fit: BoxFit.cover,
+                              placeHolder: coverUrl,
+                            )
+                            : _bookPlaceholder(),
                   ),
                 ),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: const Color(0xFF2A2A2A),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child:
-                    coverUrl.isNotEmpty
-                        ? Image.network(
-                          coverUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          errorBuilder: (_, __, ___) => _bookPlaceholder(),
-                        )
-                        : _bookPlaceholder(),
-              ),
-            ),
-          );
-        },
-        options: CarouselOptions(
-          height: 170,
-          viewportFraction: 0.55,
-          enableInfiniteScroll: ctrl.featured.length > 1,
-          autoPlay: true,
-        ),
+              );
+            }).toList(),
       ),
     );
   });
@@ -339,7 +517,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
         final tags = (story['tags'] as List? ?? []);
         return GestureDetector(
           onTap:
-              () => Navigator.push(
+              () =>
+              //print('Tapped on ${story['title']} -  - cover: $coverUrl'),
+              Navigator.push(
                 context,
                 CupertinoPageRoute(
                   builder: (_) => StoryDetailScreen(slug: story['slug']),
@@ -358,10 +538,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     width: 85,
                     child:
                         coverUrl.isNotEmpty
-                            ? Image.network(
-                              coverUrl,
+                            ? CustomImageView(
+                              imagePath: coverUrl,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _bookPlaceholder(),
+                              //errorBuilder: (_, __, ___) => _bookPlaceholder(),
                             )
                             : _bookPlaceholder(),
                   ),
@@ -371,8 +551,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   story['title'] ?? '',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -390,7 +570,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ),
                     child: Text(
                       tags[0]['name'] ?? '',
-                      style: TextStyle(color: depperBlue, fontSize: 9),
+                      style: TextStyle(color: depperBlue, fontSize: 10),
                     ),
                   ),
               ],
@@ -417,6 +597,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       itemBuilder: (_, i) {
         final story = stories[i];
         final coverUrl = ctrl.getCoverUrl(story);
+        final tags = (story['tags'] as List? ?? []);
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
           child: GestureDetector(
@@ -438,11 +619,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         height: 75,
                         child:
                             coverUrl.isNotEmpty
-                                ? Image.network(
-                                  coverUrl,
+                                ? CustomImageView(
+                                  imagePath: coverUrl,
                                   fit: BoxFit.cover,
-                                  errorBuilder:
-                                      (_, __, ___) => _bookPlaceholder(),
+                                  //errorBuilder: (_, __, ___) => _bookPlaceholder(),
                                 )
                                 : _bookPlaceholder(),
                       ),
@@ -479,10 +659,21 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         story['title'] ?? '',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
                         ),
-                        maxLines: 2,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        story['description'] ?? '',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
@@ -496,8 +687,32 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             ),
                           ),
                           const Icon(Icons.star, color: Colors.amber, size: 10),
+                          SizedBox(width: 8),
+                          Text(
+                            '${double.tryParse(story['total_views'].toString())?.toStringAsFixed(1)} views',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
                         ],
                       ),
+                      if (tags.isNotEmpty)
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: depperBlue.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            tags[0]['name'] ?? '',
+                            style: TextStyle(color: depperBlue, fontSize: 10),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -532,11 +747,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       height: 100,
                       child:
                           coverUrl.isNotEmpty
-                              ? Image.network(
-                                coverUrl,
+                              ? CustomImageView(
+                                imagePath: coverUrl,
                                 fit: BoxFit.cover,
-                                errorBuilder:
-                                    (_, __, ___) => _bookPlaceholder(),
                               )
                               : _bookPlaceholder(),
                     ),
@@ -601,21 +814,29 @@ class _ExploreScreenState extends State<ExploreScreen> {
         }).toList(),
   );
 
-  Widget _shimmerRow() => Container(
-    height: 170,
-    margin: const EdgeInsets.symmetric(horizontal: 16),
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: 4,
-      itemBuilder:
-          (_, __) => Container(
-            width: 85,
-            margin: const EdgeInsets.only(right: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
-              borderRadius: BorderRadius.circular(8),
+  Widget _shimmerRow() => Shimmer(
+    gradient: LinearGradient(
+      colors: [Colors.grey[800]!, Colors.grey[700]!, Colors.grey[800]!],
+      stops: const [0.1, 0.3, 0.4],
+      begin: Alignment(-1, -0.3),
+      end: Alignment(1, 0.3),
+    ),
+    child: Container(
+      height: 170,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 4,
+        itemBuilder:
+            (_, __) => Container(
+              width: 85,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2A2A),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-          ),
+      ),
     ),
   );
 

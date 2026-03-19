@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:novelux/config/api_service.dart';
 import 'package:novelux/config/app_style.dart';
 import 'package:novelux/screen/book_preview/story_detail_screen.dart';
+import 'package:novelux/widgets/custom_image_view.dart';
 
 class ViewAllScreen extends StatefulWidget {
   const ViewAllScreen({super.key});
@@ -13,12 +14,12 @@ class ViewAllScreen extends StatefulWidget {
 }
 
 class _ViewAllScreenState extends State<ViewAllScreen> {
-  final RxList stories    = [].obs;
-  final RxBool isLoading  = true.obs;
-  int page                = 1;
-  bool hasMore            = true;
+  final RxList stories = [].obs;
+  final RxBool isLoading = true.obs;
+  int page = 1;
+  bool hasMore = true;
   late ScrollController _sc;
-  String title            = '';
+  String title = '';
 
   @override
   void initState() {
@@ -35,7 +36,9 @@ class _ViewAllScreenState extends State<ViewAllScreen> {
   }
 
   void _onScroll() {
-    if (_sc.position.pixels >= _sc.position.maxScrollExtent - 200 && !isLoading.value && hasMore) {
+    if (_sc.position.pixels >= _sc.position.maxScrollExtent - 200 &&
+        !isLoading.value &&
+        hasMore) {
       page++;
       _fetchStories(append: true);
     }
@@ -75,8 +78,12 @@ class _ViewAllScreenState extends State<ViewAllScreen> {
 
   String _getCoverUrl(Map story) {
     final c = story['cover_image'];
-    if (c == null || c.toString().isEmpty) { return ''; }
-    if (c.toString().startsWith('http')) { return c.toString(); }
+    if (c == null || c.toString().isEmpty) {
+      return '';
+    }
+    if (c.toString().startsWith('http')) {
+      return c.toString();
+    }
     return 'http://10.0.2.2:8000$c';
   }
 
@@ -90,23 +97,37 @@ class _ViewAllScreenState extends State<ViewAllScreen> {
           child: const Icon(Icons.chevron_left, color: Colors.white, size: 28),
         ),
         centerTitle: true,
-        title: Text(title,
-            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color(0xFF1A1A1A),
         elevation: 0,
       ),
       body: SafeArea(
         child: Obx(() {
           if (isLoading.value && stories.isEmpty) {
-            return const Center(child: CircularProgressIndicator(color: Colors.blue));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.blue),
+            );
           }
           if (stories.isEmpty) {
             return Center(
-              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Icon(Icons.book_outlined, color: Colors.grey[700], size: 60),
-                const SizedBox(height: 16),
-                const Text('No stories found', style: TextStyle(color: Colors.grey, fontSize: 16)),
-              ]),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.book_outlined, color: Colors.grey[700], size: 60),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'No stories found',
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                ],
+              ),
             );
           }
           return ListView.builder(
@@ -117,17 +138,24 @@ class _ViewAllScreenState extends State<ViewAllScreen> {
               if (i == stories.length) {
                 return const Padding(
                   padding: EdgeInsets.all(16),
-                  child: Center(child: CircularProgressIndicator(color: Colors.blue)),
+                  child: Center(
+                    child: CircularProgressIndicator(color: Colors.blue),
+                  ),
                 );
               }
-              final story    = stories[i];
+              final story = stories[i];
               final coverUrl = _getCoverUrl(story);
-              final tags     = (story['tags'] as List? ?? []);
-              final author   = story['author'] ?? {};
+              final tags = (story['tags'] as List? ?? []);
+              final author = story['author'] ?? {};
 
               return GestureDetector(
-                onTap: () => Navigator.push(context, CupertinoPageRoute(
-                    builder: (_) => StoryDetailScreen(slug: story['slug']))),
+                onTap:
+                    () => Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (_) => StoryDetailScreen(slug: story['slug']),
+                      ),
+                    ),
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 14),
                   padding: const EdgeInsets.all(12),
@@ -135,70 +163,143 @@ class _ViewAllScreenState extends State<ViewAllScreen> {
                     color: Colors.grey[900],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    // Cover
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: SizedBox(
-                        width: 85, height: 115,
-                        child: coverUrl.isNotEmpty
-                            ? Image.network(coverUrl, fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _placeholder())
-                            : _placeholder(),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Cover
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: SizedBox(
+                          width: 85,
+                          height: 115,
+                          child:
+                              coverUrl.isNotEmpty
+                                  ? CustomImageView(
+                                    imagePath: coverUrl,
+                                    fit: BoxFit.cover,
+                                  )
+                                  : _placeholder(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Info
-                    Expanded(child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(story['title'] ?? '',
-                            style: const TextStyle(color: Colors.white,
-                                fontWeight: FontWeight.w600, fontSize: 14),
-                            maxLines: 1, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 4),
-                        Text(author['username'] ?? '',
-                            style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-                        const SizedBox(height: 6),
-                        Text(story['description'] ?? '',
-                            style: TextStyle(color: Colors.grey[400], fontSize: 11),
-                            maxLines: 2, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 8),
-                        // Stats
-                        Row(children: [
-                          const Icon(Icons.star, color: Color(0xFFFFD700), size: 12),
-                          const SizedBox(width: 3),
-                          Text(
-                            '${double.tryParse(story['average_rating'].toString())?.toStringAsFixed(1) ?? '0.0'}',
-                            style: const TextStyle(color: Colors.white, fontSize: 11)),
-                          const SizedBox(width: 12),
-                          const Icon(Icons.visibility_outlined, color: Colors.grey, size: 12),
-                          const SizedBox(width: 3),
-                          Text('${story['total_views'] ?? 0}',
-                              style: const TextStyle(color: Colors.grey, fontSize: 11)),
-                          const SizedBox(width: 12),
-                          const Icon(Icons.menu_book_outlined, color: Colors.grey, size: 12),
-                          const SizedBox(width: 3),
-                          Text('${story['total_chapters'] ?? 0} ch',
-                              style: const TextStyle(color: Colors.grey, fontSize: 11)),
-                        ]),
-                        const SizedBox(height: 8),
-                        // Tags
-                        if (tags.isNotEmpty)
-                          Wrap(spacing: 6, children: tags.take(3).map((t) =>
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: depperBlue.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(4),
+                      const SizedBox(width: 12),
+                      // Info
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              story['title'] ?? '',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
                               ),
-                              child: Text(t['name'] ?? '',
-                                  style: TextStyle(color: depperBlue, fontSize: 10)),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ).toList()),
-                      ],
-                    )),
-                  ]),
+                            // const SizedBox(height: 4),
+                            // Text(
+                            //   author['username'] ?? '',
+                            //   style: TextStyle(
+                            //     color: Colors.grey[400],
+                            //     fontSize: 12,
+                            //   ),
+                            // ),
+                            const SizedBox(height: 6),
+                            Text(
+                              story['description'] ?? '',
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            // Stats
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.star,
+                                  color: Color(0xFFFFD700),
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  '${double.tryParse(story['average_rating'].toString())?.toStringAsFixed(1) ?? '0.0'}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Icon(
+                                  Icons.visibility_outlined,
+                                  color: Colors.grey,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  '${story['total_views'] ?? 0}',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Icon(
+                                  Icons.menu_book_outlined,
+                                  color: Colors.grey,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  '${story['total_chapters'] ?? 0} ch',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            // Tags
+                            if (tags.isNotEmpty)
+                              Wrap(
+                                spacing: 6,
+                                children:
+                                    tags
+                                        .take(2)
+                                        .map(
+                                          (t) => Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 3,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: depperBlue.withOpacity(
+                                                0.15,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              t['name'] ?? '',
+                                              style: TextStyle(
+                                                color: depperBlue,
+                                                fontSize: 10,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

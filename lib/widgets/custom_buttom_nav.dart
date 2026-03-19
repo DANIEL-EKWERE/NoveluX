@@ -36,7 +36,7 @@ class CustomBottomNav extends StatelessWidget {
       child: BorderBottomNavigationBar(
         //BottomNavigationBar(
         height: 60,
-        backgroundColor: const Color.fromARGB(255, 33, 37, 39),
+        backgroundColor: const Color.fromARGB(255, 33, 35, 36),
         // elevation: 0,
         currentIndex: currentIndex,
         borderRadiusValue: 60,
@@ -53,13 +53,13 @@ class CustomBottomNav extends StatelessWidget {
           22,
           66,
           90,
-        ), // Dark teal for pill
+        ).withValues(alpha: .3), // Dark teal for pill
 
         selectedLabelColor: Colors.white,
         unselectedLabelColor: Colors.grey,
         unselectedBackgroundColor: Colors.transparent,
         unselectedIconColor: Colors.grey,
-        selectedIconColor: Colors.lightBlueAccent,
+        selectedIconColor: depperBlue,
         selectedIconSize: 24,
         unselectedIconSize: 24,
         // items: [
@@ -94,7 +94,7 @@ class CustomBottomNav extends StatelessWidget {
             label: 'Library', // Labels are now required
           ),
           BorderBottomNavigationItems(
-            icon: LucideIcons.earth,
+            icon: LucideIcons.bubbles,
             label: 'Explorer', // Labels are now required
           ),
           BorderBottomNavigationItems(

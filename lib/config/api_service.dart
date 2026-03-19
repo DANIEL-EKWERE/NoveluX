@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:novelux/config/local_storage.dart';
+import 'dart:developer' as myLog;
 
 // class ApiService {
 //   static const String baseUrl = 'https://novelux-backend.onrender.com/api';
 //   //'http://127.0.0.1:8000/api';
-  
+
 //   //'http://10.0.2.2:8000/api';
 //   // Use http://localhost:8000/api for iOS simulator
 //   // Use http://192.168.222.146:8000/api for physical device
@@ -277,14 +278,13 @@ import 'package:novelux/config/local_storage.dart';
 //       _request('GET', '/auth/profile/$username/', requiresAuth: false);
 // }
 
-
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:novelux/config/local_storage.dart';
 
 class ApiService {
-   static const String baseUrl = 'https://novelux-backend.onrender.com/api';
+  static const String baseUrl = 'https://novelux-backend.onrender.com/api';
   //'http://10.0.2.2:8000/api';
   // Use http://localhost:8000/api for iOS simulator
   // Use http://YOUR_PC_IP:8000/api for physical device
@@ -315,12 +315,18 @@ class ApiService {
           response = await http.get(uri, headers: headers);
           break;
         case 'POST':
-          response = await http.post(uri,
-              headers: headers, body: body != null ? jsonEncode(body) : null);
+          response = await http.post(
+            uri,
+            headers: headers,
+            body: body != null ? jsonEncode(body) : null,
+          );
           break;
         case 'PATCH':
-          response = await http.patch(uri,
-              headers: headers, body: body != null ? jsonEncode(body) : null);
+          response = await http.patch(
+            uri,
+            headers: headers,
+            body: body != null ? jsonEncode(body) : null,
+          );
           break;
         case 'DELETE':
           response = await http.delete(uri, headers: headers);
@@ -332,7 +338,12 @@ class ApiService {
       final decoded = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        return {'success': true, 'data': decoded, 'status': response.statusCode};
+        // myLog.log(decoded);
+        return {
+          'success': true,
+          'data': decoded,
+          'status': response.statusCode,
+        };
       } else {
         return {
           'success': false,
@@ -368,30 +379,37 @@ class ApiService {
     required String password1,
     required String password2,
     String role = 'reader',
-  }) =>
-      _request('POST', '/auth/dj/registration/', body: {
-        'username': username,
-        'email': email,
-        'password1': password1,
-        'password2': password2,
-        'role': role,
-      }, requiresAuth: false);
+  }) => _request(
+    'POST',
+    '/auth/dj/registration/',
+    body: {
+      'username': username,
+      'email': email,
+      'password1': password1,
+      'password2': password2,
+      'role': role,
+    },
+    requiresAuth: false,
+  );
 
   static Future<Map<String, dynamic>> login({
     required String email,
     required String password,
-  }) =>
-      _request('POST', '/auth/token/', body: {
-        'email': email,
-        'password': password,
-      }, requiresAuth: false);
+  }) => _request(
+    'POST',
+    '/auth/token/',
+    body: {'email': email, 'password': password},
+    requiresAuth: false,
+  );
 
-  static Future<Map<String, dynamic>> refreshToken(String refresh) =>
-      _request('POST', '/auth/token/refresh/', body: {'refresh': refresh},
-          requiresAuth: false);
+  static Future<Map<String, dynamic>> refreshToken(String refresh) => _request(
+    'POST',
+    '/auth/token/refresh/',
+    body: {'refresh': refresh},
+    requiresAuth: false,
+  );
 
-  static Future<Map<String, dynamic>> getMe() =>
-      _request('GET', '/auth/me/');
+  static Future<Map<String, dynamic>> getMe() => _request('GET', '/auth/me/');
 
   static Future<Map<String, dynamic>> updateMe(Map<String, dynamic> data) =>
       _request('PATCH', '/auth/me/', body: data);
@@ -451,15 +469,22 @@ class ApiService {
       _request('DELETE', '/stories/$slug/bookmark/');
 
   static Future<Map<String, dynamic>> rateStory(
-          String slug, int score, String review) =>
-      _request('POST', '/stories/$slug/rate/', body: {'score': score, 'review': review});
+    String slug,
+    int score,
+    String review,
+  ) => _request(
+    'POST',
+    '/stories/$slug/rate/',
+    body: {'score': score, 'review': review},
+  );
 
   static Future<Map<String, dynamic>> createStory(Map<String, dynamic> data) =>
       _request('POST', '/stories/', body: data);
 
   static Future<Map<String, dynamic>> updateStory(
-          String slug, Map<String, dynamic> data) =>
-      _request('PATCH', '/stories/$slug/', body: data);
+    String slug,
+    Map<String, dynamic> data,
+  ) => _request('PATCH', '/stories/$slug/', body: data);
 
   static Future<Map<String, dynamic>> getMyStories() =>
       _request('GET', '/stories/mine/');
@@ -469,16 +494,19 @@ class ApiService {
       _request('GET', '/chapters/$storySlug/chapters/', requiresAuth: true);
 
   static Future<Map<String, dynamic>> getChapter(
-          String storySlug, int chapterNumber) =>
-      _request('GET', '/chapters/$storySlug/chapters/$chapterNumber/');
+    String storySlug,
+    int chapterNumber,
+  ) => _request('GET', '/chapters/$storySlug/chapters/$chapterNumber/');
 
   static Future<Map<String, dynamic>> unlockChapter(
-          String storySlug, int chapterNumber) =>
-      _request('POST', '/chapters/$storySlug/chapters/$chapterNumber/unlock/');
+    String storySlug,
+    int chapterNumber,
+  ) => _request('POST', '/chapters/$storySlug/chapters/$chapterNumber/unlock/');
 
   static Future<Map<String, dynamic>> createChapter(
-          String storySlug, Map<String, dynamic> data) =>
-      _request('POST', '/chapters/$storySlug/chapters/', body: data);
+    String storySlug,
+    Map<String, dynamic> data,
+  ) => _request('POST', '/chapters/$storySlug/chapters/', body: data);
 
   // ── Coins ──────────────────────────────────────────────────────────────────
   static Future<Map<String, dynamic>> getCoinPackages() =>
@@ -491,29 +519,44 @@ class ApiService {
       _request('GET', '/coins/balance/');
 
   static Future<Map<String, dynamic>> createCheckout(
-          String purchaseType, {String? packageId, String? planId}) =>
-      _request('POST', '/coins/checkout/', body: {
-        'purchase_type': purchaseType,
-        if (packageId != null) 'package_id': packageId,
-        if (planId != null) 'plan_id': planId,
-      });
+    String purchaseType, {
+    String? packageId,
+    String? planId,
+  }) => _request(
+    'POST',
+    '/coins/checkout/',
+    body: {
+      'purchase_type': purchaseType,
+      if (packageId != null) 'package_id': packageId,
+      if (planId != null) 'plan_id': planId,
+    },
+  );
 
   // ── Comments ───────────────────────────────────────────────────────────────
   static Future<Map<String, dynamic>> getComments(
-          String storySlug, int chapterNumber) =>
-      _request('GET', '/comments/$storySlug/chapters/$chapterNumber/comments/',
-          requiresAuth: false);
+    String storySlug,
+    int chapterNumber,
+  ) => _request(
+    'GET',
+    '/comments/$storySlug/chapters/$chapterNumber/comments/',
+    requiresAuth: false,
+  );
 
   static Future<Map<String, dynamic>> postComment(
-          String storySlug, int chapterNumber, String content,
-          {int? parentId, int? paragraphIndex}) =>
-      _request('POST',
-          '/comments/$storySlug/chapters/$chapterNumber/comments/',
-          body: {
-            'content': content,
-            if (parentId != null) 'parent': parentId,
-            if (paragraphIndex != null) 'paragraph_index': paragraphIndex,
-          });
+    String storySlug,
+    int chapterNumber,
+    String content, {
+    int? parentId,
+    int? paragraphIndex,
+  }) => _request(
+    'POST',
+    '/comments/$storySlug/chapters/$chapterNumber/comments/',
+    body: {
+      'content': content,
+      if (parentId != null) 'parent': parentId,
+      if (paragraphIndex != null) 'paragraph_index': paragraphIndex,
+    },
+  );
 
   static Future<Map<String, dynamic>> likeComment(int commentId) =>
       _request('POST', '/comments/comment/$commentId/like/');
@@ -523,11 +566,18 @@ class ApiService {
 
   // ── Tips ───────────────────────────────────────────────────────────────────
   static Future<Map<String, dynamic>> sendTip(
-          String storySlug, int coins, {String? message}) =>
-      _request('POST', '/tips/$storySlug/tip/', body: {
-        'coins_amount': coins.toInt(), // explicit int — prevents string serialisation
-        if (message != null && message.isNotEmpty) 'message': message,
-      });
+    String storySlug,
+    int coins, {
+    String? message,
+  }) => _request(
+    'POST',
+    '/tips/$storySlug/tip/',
+    body: {
+      'coins_amount':
+          coins.toInt(), // explicit int — prevents string serialisation
+      if (message != null && message.isNotEmpty) 'message': message,
+    },
+  );
 
   static Future<Map<String, dynamic>> getTopTippers(String storySlug) =>
       _request('GET', '/tips/$storySlug/top-tippers/', requiresAuth: false);
@@ -544,28 +594,37 @@ class ApiService {
 
   static Future<Map<String, dynamic>> markRead(int id) =>
       _request('POST', '/notifications/$id/read/');
-//}
+  //}
 
-  static Future<Map<String, dynamic>> requestPayout() =>
-      _request('POST', '/coins/payout/request/', body: {
-        'payout_method': 'bank_transfer',
-      });
+  static Future<Map<String, dynamic>> requestPayout() => _request(
+    'POST',
+    '/coins/payout/request/',
+    body: {'payout_method': 'bank_transfer'},
+  );
 
   static Future<Map<String, dynamic>> getPublicProfile(String username) =>
       _request('GET', '/auth/profile/$username/', requiresAuth: false);
 
   // ── Reviews ────────────────────────────────────────────────────────────────
   static Future<Map<String, dynamic>> getStoryReviews(
-      String slug, {String type = 'all'}) {
+    String slug, {
+    String type = 'all',
+  }) {
     final query = type == 'all' ? '' : '?rating=$type';
-    return _request('GET', '/stories/$slug/reviews/$query',
-        requiresAuth: false);
+    return _request(
+      'GET',
+      '/stories/$slug/reviews/$query',
+      requiresAuth: false,
+    );
   }
 
   static Future<Map<String, dynamic>> submitReview(
-      String slug, {required String rating, String content = ''}) =>
-      _request('POST', '/stories/$slug/reviews/', body: {
-        'rating':  rating,
-        'content': content,
-      });
+    String slug, {
+    required String rating,
+    String content = '',
+  }) => _request(
+    'POST',
+    '/stories/$slug/reviews/',
+    body: {'rating': rating, 'content': content},
+  );
 }

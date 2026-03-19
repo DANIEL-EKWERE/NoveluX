@@ -20,6 +20,7 @@ class _MeScreenState extends State<MeScreen> {
       backgroundColor: Color(0xFF1a1a1a),
 
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // Profile header

@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:novelux/config/app_style.dart';
 import 'package:novelux/config/size_config.dart';
 import 'package:novelux/screen/auth/auth_controller.dart';
 import 'package:novelux/screen/auth/auth_screens.dart';
 import 'package:novelux/screen/book_preview/story_detail_screen.dart';
 import 'package:novelux/screen/library/controller/library_controller.dart';
+import 'package:novelux/widgets/custom_image_view.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -32,6 +34,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final auth = Get.find<AuthController>();
 
     return SafeArea(
+      bottom: false,
       child: Scaffold(
         extendBody: true,
         backgroundColor: background,
@@ -67,6 +70,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       isScrollable: true,
                       labelPadding: const EdgeInsets.symmetric(horizontal: 20),
                       tabAlignment: TabAlignment.center,
+                      labelStyle: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                       tabs: const [Tab(text: 'Library'), Tab(text: 'History')],
                     ),
                     const Spacer(),
@@ -128,6 +135,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                           color:
                                               isActive ? Colors.white : kWhite,
                                           fontSize: 12,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
@@ -170,6 +178,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                       'Browse stories and tap the bookmark icon',
                                       style: TextStyle(
                                         color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
                                         fontSize: 13,
                                       ),
                                     ),
@@ -225,12 +234,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                                 width: double.infinity,
                                                 child:
                                                     coverUrl.isNotEmpty
-                                                        ? Image.network(
-                                                          coverUrl,
+                                                        ? CustomImageView(
+                                                          imagePath: coverUrl,
                                                           fit: BoxFit.cover,
-                                                          errorBuilder:
-                                                              (_, __, ___) =>
-                                                                  _coverPlaceholder(),
+                                                          //
                                                         )
                                                         : _coverPlaceholder(),
                                               ),
@@ -268,8 +275,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                         Text(
                                           story['title'] ?? '',
                                           style: const TextStyle(
-                                            fontSize: 11,
+                                            fontSize: 12,
                                             color: Colors.white,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
@@ -346,12 +354,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                           SizeConfig.blockSizeHorizontal! * 13,
                                       child:
                                           coverUrl.isNotEmpty
-                                              ? Image.network(
-                                                coverUrl,
+                                              ? CustomImageView(
+                                                imagePath: coverUrl,
                                                 fit: BoxFit.cover,
-                                                errorBuilder:
-                                                    (_, __, ___) =>
-                                                        _coverPlaceholder(),
+                                               
                                               )
                                               : _coverPlaceholder(),
                                     ),
