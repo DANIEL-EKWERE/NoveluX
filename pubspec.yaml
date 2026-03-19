@@ -63,6 +63,7 @@ dependencies:
   file_picker: 
   lucide_icons_flutter: ^3.0.8
   rolling_bottom_bar: ^0.2.2
+  border_bottom_navigation_bar: ^1.0.3
   # google_fonts: ^6.2.1
 
 dev_dependencies:
@@ -88,8 +89,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

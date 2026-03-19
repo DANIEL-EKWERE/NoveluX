@@ -13,7 +13,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-   int _currentIndex = 0;
+  int _currentIndex = 0;
 
   Widget _getCurrentScreen() {
     switch (_currentIndex) {
@@ -26,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
       case 3:
         return const MeScreen();
       default:
-        return const LibraryScreen(); 
+        return const LibraryScreen();
     }
   }
 
@@ -41,14 +41,12 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
-        body: _getCurrentScreen(),
-        bottomNavigationBar: 
-        
-        CustomBottomNav(
-          currentIndex: _currentIndex,
-          onTap: _onTabTapped,
-        ),
-      );
+      extendBody: true,
+      body: _getCurrentScreen(),
+      bottomNavigationBar: CustomBottomNav(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+      ),
+    );
   }
 }

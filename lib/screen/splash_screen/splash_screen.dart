@@ -10,22 +10,29 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animCtrl;
   late Animation<double> _fadeAnim;
 
   @override
   void initState() {
     super.initState();
-    _animCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
-    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeIn));
+    _animCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    _fadeAnim = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeIn));
     _animCtrl.forward();
     _navigate();
   }
 
   Future<void> _navigate() async {
     await Future.delayed(const Duration(seconds: 3));
-    final db    = Get.find<DataBase>();
+    final db = Get.find<DataBase>();
     final token = await db.getToken();
     if (token.isNotEmpty) {
       Get.offAllNamed('/main_screen');
@@ -46,32 +53,61 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       backgroundColor: background,
       body: FadeTransition(
         opacity: _fadeAnim,
-        child: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Container(
-              width: 90, height: 90,
-              decoration: BoxDecoration(
-                color: depperBlue,
-                borderRadius: BorderRadius.circular(22),
-                boxShadow: [BoxShadow(color: depperBlue.withOpacity(0.4), blurRadius: 20, spreadRadius: 2)],
+        child: Stack(
+          children: [
+            // Full-screen background image
+            SizedBox.expand(
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/splashscreen1.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-              child: const Icon(Icons.menu_book, color: Colors.white, size: 50),
             ),
-            const SizedBox(height: 24),
-            Text('NoveluX',
-                style: TextStyle(
-                    fontSize: 36, fontWeight: FontWeight.bold,
+            // Content overlay
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.menu_book,
                     color: Colors.white,
-                    letterSpacing: 2)),
-            const SizedBox(height: 8),
-            const Text('Read. Write. Earn.',
-                style: TextStyle(color: Colors.grey, fontSize: 16, letterSpacing: 1)),
-            const SizedBox(height: 60),
-            SizedBox(
-              width: 30, height: 30,
-              child: CircularProgressIndicator(color: depperBlue, strokeWidth: 2),
+                    size: 50,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'NoveluX',
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Read. Write. Earn.',
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 16,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 60),
+                  SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(
+                      color: depperBlue,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ]),
+          ],
         ),
       ),
     );
